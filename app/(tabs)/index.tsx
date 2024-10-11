@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { ScrollView } from "react-native";
-import Header from '../../components/home/Header'; // 헤더 컴포넌트
-import WeatherInfo from '../../components/home/WeatherInfo'; // 날씨 정보 컴포넌트
-import Schedule from '../../components/home/Schedule'; // 오늘의 일정 컴포넌트
+import Header from '../../components/home/Header'; 
+import WeatherInfo from '../../components/home/WeatherInfo'; 
+import Schedule from '../../components/home/Schedule'; 
 
 export default function TabOneScreen() {
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);

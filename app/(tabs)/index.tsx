@@ -1,35 +1,22 @@
-import { StyleSheet } from "react-native";
-
-import EditScreenInfo from "@/components/EditScreenInfo";
-import { Text, View } from "@/components/Themed";
+import React, { useState } from "react";
+import { ScrollView } from "react-native";
+import Header from '../../components/home/Header'; // 헤더 컴포넌트
+import WeatherInfo from '../../components/home/WeatherInfo'; // 날씨 정보 컴포넌트
+import Schedule from '../../components/home/Schedule'; // 오늘의 일정 컴포넌트
 
 export default function TabOneScreen() {
+  const [selectedDayIndex, setSelectedDayIndex] = useState(0);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>홈</Text>
-      <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      />
-      <EditScreenInfo path="app/(tabs)/index.tsx" />
-    </View>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      {/* Header 컴포넌트 */}
+      <Header selectedDayIndex={selectedDayIndex} setSelectedDayIndex={setSelectedDayIndex} />
+      
+      {/* WeatherInfo 컴포넌트 */}
+      <WeatherInfo />
+
+      {/* Schedule 컴포넌트 */}
+      <Schedule />
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
-  },
-});

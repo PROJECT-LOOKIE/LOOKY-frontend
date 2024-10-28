@@ -1,73 +1,79 @@
 import React from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Link, Tabs } from "expo-router";
-import { Pressable } from "react-native";
+import { Tabs } from "expo-router";
+import { ImageSourcePropType, Pressable } from "react-native";
 
-import Colors from "@/constants/Colors";
+import { Image } from "react-native";
+
 import { useColorScheme } from "@/components/useColorScheme";
-import { useClientOnlyValue } from "@/components/useClientOnlyValue";
-
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>["name"];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
+  type TabIconType = {
+    [key: string]: {
+      default: ImageSourcePropType;
+      active: ImageSourcePropType;
+    };
+  };
+
+  const TabIcons: TabIconType = {
+    home: {
+      default: require("../../assets/images/homeTabDefault.png"),
+      active: require("../../assets/images/homeTabActive.png"),
+    },
+    closet: {
+      default: require("../../assets/images/closetTabDefault.png"),
+      active: require("../../assets/images/closetTabActive.png"),
+    },
+    look: {
+      default: require("../../assets/images/lookTabDefault.png"),
+      active: require("../../assets/images/lookTabActive.png"),
+    },
+    mypage: {
+      default: require("../../assets/images/mypageTabDefault.png"),
+      active: require("../../assets/images/mypageTabActive.png"),
+    },
+  };
+
+  const TabLists = [
+    { name: "home", title: "홈" },
+    { name: "closet", title: "옷장" },
+    { name: "look", title: "룩" },
+    { name: "mypage", title: "마이" },
+  ];
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
-        headerShown: false,
+        tabBarActiveTintColor: "black",
+        tabBarInactiveTintColor: "black",
+        tabBarStyle: {
+          borderTopWidth: 2,
+          backgroundColor: "white",
+          borderTopColor: "black",
+          height: "10%",
+        },
       }}
     >
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: "홈",
-          tabBarIcon: ({ color }) => <TabBarIcon name="plus" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? "light"].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="two"
-        options={{
-          title: "옷장",
-          tabBarIcon: ({ color }) => <TabBarIcon name="plus" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="three"
-        options={{
-          title: "룩",
-          tabBarIcon: ({ color }) => <TabBarIcon name="plus" color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="four"
-        options={{
-          title: "마이",
-          tabBarIcon: ({ color }) => <TabBarIcon name="plus" color={color} />,
-        }}
-      />
+      {TabLists.map((tab, i) => (
+        <Tabs.Screen
+          key={i}
+          name={tab.name}
+          options={{
+            title: tab.title,
+            tabBarIcon: ({ focused }) => (
+              <Image
+                source={
+                  focused
+                    ? TabIcons[tab.name].active
+                    : TabIcons[tab.name].default
+                }
+                style={{ width: 32, height: 32, marginBottom: -8 }}
+              />
+            ),
+          }}
+        />
+      ))}
     </Tabs>
   );
 }

@@ -5,6 +5,7 @@ import { ImageSourcePropType, Pressable } from "react-native";
 import { Image } from "react-native";
 
 import { useColorScheme } from "@/components/useColorScheme";
+import Colors from "@/constants/Colors";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -53,6 +54,9 @@ export default function TabLayout() {
           backgroundColor: "white",
           borderTopColor: "black",
           height: "10%",
+        },
+        tabBarItemStyle: {
+          backgroundColor: Colors.background,
         },
       }}
     >

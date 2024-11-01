@@ -1,15 +1,13 @@
 import React from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
+import EyeIcon from "../../assets/images/eye.svg";
 
 export default function WeatherInfo() {
   return (
     <View>
       {/* PNG 눈 이모티콘 */}
       <View style={styles.emojiContainer}>
-        <Image
-          source={require("../../assets/images/OO.png")} // 나중에 수정필요
-          style={{ width: 40, height: 40 }}
-        />
+       <EyeIcon width={40} height={25} />
       </View>
 
       {/* 날씨 정보 박스 */}

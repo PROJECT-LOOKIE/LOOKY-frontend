@@ -5,7 +5,7 @@ import CordiZone from "@/components/closet/CordiZone";
 import ClothType from "@/components/closet/ClothType";
 import ClothGrid from "@/components/closet/ClothGrid";
 import Colors from "@/constants/Colors";
-import { ScrollView } from "react-native";
+import AddButton from "@/components/closet/AddButton";
 
 export default function Closet() {
   return (
@@ -14,7 +14,7 @@ export default function Closet() {
       <ClothType />
       <ClothGrid />
 
-      {/* <AddButton /> */}
+      <AddButton />
     </View>
   );
 }
@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
     paddingTop: 75,
     paddingHorizontal: 20,
   },
+
   // title: {
   //   fontSize: 20,
   //   fontWeight: "bold",

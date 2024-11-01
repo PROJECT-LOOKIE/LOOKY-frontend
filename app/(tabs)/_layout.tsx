@@ -55,9 +55,6 @@ export default function TabLayout() {
           borderTopColor: "black",
           height: "10%",
         },
-        tabBarItemStyle: {
-          backgroundColor: Colors.background,
-        },
       }}
     >
       {TabLists.map((tab, i) => (

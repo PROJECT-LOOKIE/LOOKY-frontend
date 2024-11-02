@@ -13,17 +13,20 @@ import Modal from 'react-native-modal';
 interface HeaderProps {
   selectedDayIndex: number;
   setSelectedDayIndex: (index: number) => void;
+  selectedDate: Date;
+  setSelectedDate: (date: Date) => void;
 }
 
 export default function Header({
   selectedDayIndex,
   setSelectedDayIndex,
+  selectedDate,
+  setSelectedDate,
 }: HeaderProps) {
-  const [date, setDate] = useState(new Date());
   const [isPickerVisible, setPickerVisible] = useState(false);
 
-  const selectedYear = date.getFullYear();
-  const selectedMonth = date.getMonth() + 1;
+  const selectedYear = selectedDate.getFullYear();
+  const selectedMonth = selectedDate.getMonth() + 1;
 
   function getWeekDates(date: Date) {
     const day = date.getDay();
@@ -40,7 +43,7 @@ export default function Header({
     return weekDates;
   }
 
-  const weekDates = getWeekDates(date);
+  const weekDates = getWeekDates(selectedDate);
 
   const showDatePicker = () => {
     setPickerVisible(true);
@@ -50,8 +53,8 @@ export default function Header({
     setPickerVisible(false);
   };
 
-  const handleConfirm = (selectedDate: Date) => {
-    setDate(selectedDate);
+  const handleConfirm = (date: Date) => {
+    setSelectedDate(date);
     hideDatePicker();
   };
 
@@ -74,12 +77,12 @@ export default function Header({
       >
         <View style={styles.pickerContainer}>
           <DateTimePicker
-            value={date}
+            value={selectedDate}
             mode="date"
-            display="spinner" 
-            onChange={(event, selectedDate) => {
-              if (selectedDate) {
-                handleConfirm(selectedDate);
+            display="spinner"
+            onChange={(event, date) => {
+              if (date) {
+                handleConfirm(date);
               }
             }}
             locale="ko-KR"
@@ -104,7 +107,10 @@ export default function Header({
                 styles.dayButton,
                 isSelected && styles.selectedDay,
               ]}
-              onPress={() => setSelectedDayIndex(index)}
+              onPress={() => {
+                setSelectedDayIndex(index);
+                setSelectedDate(dateObj); 
+              }}
             >
               <Text
                 style={[

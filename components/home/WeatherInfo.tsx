@@ -114,6 +114,7 @@ export default function WeatherInfo({ selectedDate }: WeatherInfoProps) {
   function generateCommentary(maxTemp: number, minTemp: number): string {
     const tempDifference = maxTemp - minTemp;
 
+    // 눈 비 있을때 추가 
     if (tempDifference > 10) {
       return "일교차가 크니 겉옷을 준비하세요.";
     } else if (maxTemp >= 30) {

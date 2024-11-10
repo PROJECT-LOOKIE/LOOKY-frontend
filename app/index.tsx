@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import Logo from "../assets/images/logo.svg";
 import KakaoIcon from "../assets/images/kakao.svg";
 import AppleIcon from "../assets/images/apple.svg";
@@ -19,14 +19,12 @@ export default function Login() {
       </TouchableOpacity>
 
       {/* 애플 로그인 버튼 */}
-      <TouchableOpacity style={styles.appleButton}>
+      <TouchableOpacity style={styles.appleButton}
+        onPress={() => {
+          router.push("/home");
+        }}>
         <AppleIcon width={345} height={50} />
       </TouchableOpacity>
-
-      {/* 메인 스크린 이동 버튼
-      <Link href="/home" style={styles.link}>
-        <Text>메인 스크린 이동 버튼</Text>
-      </Link> */}
     </View>
   );
 }

@@ -14,7 +14,8 @@ export default function ClothType() {
 
 const styles = StyleSheet.create({
   container: {
-    height: 32,
+    height: 40,
     backgroundColor: Colors.background,
+    marginBottom: 4,
   },
 });

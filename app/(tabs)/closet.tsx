@@ -10,7 +10,8 @@ import AddButton from "@/components/closet/AddButton";
 export default function Closet() {
   return (
     <View style={styles.container}>
-      <CordiZone />
+      {/* 디자인 바뀜 */}
+      {/* <CordiZone /> */}
       <ClothType />
       <ClothGrid />
 

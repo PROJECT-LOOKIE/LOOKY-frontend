@@ -25,7 +25,7 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
 
     // 이미지 선택
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All, // 이미지와 비디오 모두 선택 가능
+      mediaTypes: ImagePicker.MediaTypeOptions.Images, // 이미지만 선택 가능
       allowsEditing: true, // 편집 허용
       aspect: [4, 3], // 비율
       quality: 1, // 이미지 품질 (0~1)
@@ -33,6 +33,8 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
 
     if (!result.canceled && result) {
       setSelectedImage(result.assets[0].uri); // 선택한 이미지의 URI를 상태에 저장
+
+      // 이미지 uri 를 백에게 전달 -> 누끼 제거 후 다시 받아오기 (api 정의 되고나서 구현 시작)
     }
   };
 
@@ -66,14 +68,14 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
 
   return (
     <View style={modalStyle}>
-      <Text style={{ color: "white" }} onPress={openGallery}>
+      <Text style={{ color: "white", fontSize: 16 }} onPress={openGallery}>
         앨범에서 추가
       </Text>
 
       {/* 구분선 추가 */}
       <View style={styles.separator} />
 
-      <Text style={{ color: "white" }} onPress={openCamera}>
+      <Text style={{ color: "white", fontSize: 16 }} onPress={openCamera}>
         사진 촬영하기
       </Text>
     </View>

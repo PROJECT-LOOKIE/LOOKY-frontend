@@ -29,7 +29,12 @@ export default function Category({ categoryList }: CategoryProps) {
             style={[styles.categoryItem, isSelected && styles.selectedItem]}
             onPress={() => clickCategory(idx)}
           >
-            <BoldText style={{ fontSize: 16, color: Colors.gray900 }}>
+            <BoldText
+              style={{
+                fontSize: 16,
+                color: isSelected ? "black" : Colors.gray400,
+              }}
+            >
               {category}
             </BoldText>
           </TouchableOpacity>
@@ -44,15 +49,21 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
+    height: "100%",
   },
   categoryItem: {
-    backgroundColor: Colors.gray700,
+    backgroundColor: "white",
+    height: "100%",
     borderRadius: 25,
+    justifyContent: "center",
     paddingHorizontal: 20,
-    paddingVertical: 6,
     marginRight: 10,
+    borderColor: Colors.gray400,
+    borderWidth: 2,
   },
   selectedItem: {
     backgroundColor: Colors.yellowGreen,
+    borderColor: "black",
+    borderWidth: 2,
   },
 });

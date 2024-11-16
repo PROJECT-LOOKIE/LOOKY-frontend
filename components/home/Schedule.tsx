@@ -1,13 +1,21 @@
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View ,TouchableOpacity} from "react-native";
+import { useRouter } from "expo-router";
+
 
 export default function Schedule() {
+  const router = useRouter();
+
   return (
     <View style={styles.scheduleSection}>
       <Text style={styles.scheduleTitle}>오늘의 일정</Text>
       <View style={styles.scheduleBox}>
         <View style={styles.plusIconContainer}>
+          <TouchableOpacity onPress={() => {
+            router.push("/schedule");
+          }}>
           <Text style={styles.plusIcon}>+</Text>
+          </TouchableOpacity>
         </View>
         <Text style={styles.noScheduleText}>
           아직 일정이 없네요,{"\n"}일정을 추가해보세요!

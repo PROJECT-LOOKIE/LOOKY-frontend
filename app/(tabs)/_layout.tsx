@@ -17,7 +17,7 @@ export default function TabLayout() {
   };
 
   const TabIcons: TabIconType = {
-    home: {
+    "home/index": {
       default: require("../../assets/images/homeTabDefault.png"),
       active: require("../../assets/images/homeTabActive.png"),
     },
@@ -36,7 +36,7 @@ export default function TabLayout() {
   };
 
   const TabLists = [
-    { name: "home", title: "홈" },
+    { name: "home/index", title: "홈" },
     { name: "closet", title: "옷장" },
     { name: "look", title: "룩" },
     { name: "mypage", title: "마이" },

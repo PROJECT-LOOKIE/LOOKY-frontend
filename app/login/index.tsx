@@ -1,16 +1,14 @@
 import React from 'react';
 import { TextInput, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
-import BackIcon from '../assets/images/back.svg';
 import { RootStackParamList } from '../routes.d'; 
-
 export default function Nickname() {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   return (
     <View style={styles.container}>
          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-             <BackIcon width={24} height={24} />
+              <Text>←</Text>
          </TouchableOpacity>
 
          <Text style={styles.title}>루키에서 사용할 닉네임을 적어주세요!</Text>

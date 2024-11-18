@@ -35,12 +35,39 @@ export default function Login() {
         console.log("Refresh Token:", refreshToken);
 
         setShowWebView(false);
-        Alert.alert("로그인 성공", "앱으로 이동합니다.");
-        router.push("/home"); 
+        sendUserDataToServer(accessToken); // 서버로 요청
       } else {
         console.error("토큰이 URL에 없습니다.");
         Alert.alert("로그인 실패", "토큰을 받아올 수 없습니다.");
       }
+    }
+  };
+
+  const sendUserDataToServer = async (accessToken: string) => {
+    setLoading(true); 
+    try {
+      const response = await fetch("http://43.201.12.36:8080/api/v1/user", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`, 
+        },
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log("서버 응답:", data);
+        Alert.alert("로그인 성공", "로그인에 성공했습니다.");
+        router.push("/login"); 
+      } else {
+        console.error("서버 에러:", data);
+        Alert.alert("로그인 실패", "서버와의 통신에 문제가 발생했습니다.");
+      }
+    } catch (error) {
+      console.error("API 요청 에러:", error);
+      Alert.alert("로그인 실패", "서버 요청 중 문제가 발생했습니다.");
+    } finally {
+      setLoading(false); 
     }
   };
 
@@ -62,7 +89,7 @@ export default function Login() {
 
       {/* 애플 로그인 버튼 */}
       {!showWebView && (
-        <TouchableOpacity style={styles.appleButton} onPress={() => router.push("/home")}>
+        <TouchableOpacity style={styles.appleButton} onPress={() => router.push("/login")}>
           <AppleIcon width={345} height={50} />
         </TouchableOpacity>
       )}

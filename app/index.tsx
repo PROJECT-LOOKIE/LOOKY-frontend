@@ -58,7 +58,7 @@ export default function Login() {
       if (response.ok) {
         console.log("서버 응답:", data);
         Alert.alert("로그인 성공", "로그인에 성공했습니다.");
-        router.push("/home"); 
+        router.push("/login"); 
       } else {
         console.error("서버 에러:", data);
         Alert.alert("로그인 실패", "서버와의 통신에 문제가 발생했습니다.");
@@ -89,7 +89,7 @@ export default function Login() {
 
       {/* 애플 로그인 버튼 */}
       {!showWebView && (
-        <TouchableOpacity style={styles.appleButton} onPress={() => router.push("/home")}>
+        <TouchableOpacity style={styles.appleButton} onPress={() => router.push("/login")}>
           <AppleIcon width={345} height={50} />
         </TouchableOpacity>
       )}

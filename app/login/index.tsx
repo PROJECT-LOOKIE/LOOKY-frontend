@@ -1,29 +1,62 @@
-import React from 'react';
-import { TextInput, StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import React, { useState, useLayoutEffect } from 'react';
+import { TextInput, StyleSheet, View, Text, TouchableOpacity, Image, Alert } from 'react-native';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from '../routes.d'; 
-export default function Nickname() {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+import CameraIcon from '../../assets/images/camera.svg';
+import BackIcon from '../../assets/images/go.svg';  
+
+   export default function Nickname() {
+     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+     const [nickname, setNickname] = useState('');
+
+  // 헤더 숨기기
+     useLayoutEffect(() => {
+       navigation.setOptions({ headerShown: false });
+       }, [navigation]);
+
+       const handleStart = () => {
+           if (!nickname.trim()) {
+           Alert.alert('닉네임 오류', '닉네임을 입력해주세요.');
+          return;
+    }
+          navigation.navigate('Home');
+  };
 
   return (
     <View style={styles.container}>
          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-              <Text>←</Text>
+              <BackIcon width={24} height={24} />
          </TouchableOpacity>
 
-         <Text style={styles.title}>루키에서 사용할 닉네임을 적어주세요!</Text>
+      <Text style={styles.title}>
+          루키에서 사용 할{'\n'}닉네임을 적어주세요!
+      </Text>
 
-         <TouchableOpacity style={styles.photoContainer}>
-             <Text style={styles.photoText}>사진 선택</Text>
-         </TouchableOpacity>
+      <TouchableOpacity style={styles.photoContainer}>
+         <CameraIcon style={styles.cameraIcon} />
+      </TouchableOpacity>
 
-         <TextInput
-             style={styles.input}
-             placeholder="닉네임을 입력해주세요"
-             placeholderTextColor="#999999"
+      <Text style={styles.photoText}>사진 선택해주세요.</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="닉네임을 입력해주세요"
+        placeholderTextColor="#999999"
+        value={nickname}
+        onChangeText={setNickname}
       />
-         <TouchableOpacity style={styles.startButton} onPress={() => navigation.navigate('Home')}>
-             <Text style={styles.startButtonText}>시작하기</Text>
+
+      <TouchableOpacity
+        style={[styles.startButton, !nickname.trim() && styles.disabledButton]}
+        onPress={handleStart}
+        disabled={!nickname.trim()}
+      >
+        <Text
+    style={[
+      styles.startButtonText,
+      !nickname.trim() && styles.disabledButtonText,
+    ]}
+  >Lookie 시작하기</Text>
       </TouchableOpacity>
     </View>
   );
@@ -32,20 +65,26 @@ export default function Nickname() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FBEFEF',
+    backgroundColor: '#FAFAFA',
     padding: 20,
     alignItems: 'center',
   },
   backButton: {
     alignSelf: 'flex-start',
-    marginBottom: 20,
+    marginBottom: 50,
+    marginTop: 60,
+  },
+  backButtonText: {
+    fontSize: 18,
+    color: '#000',
   },
   title: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#000',
-    marginBottom: 30,
-    textAlign: 'center',
+    marginBottom: 37,
+    textAlign: 'left',
+    alignSelf: 'flex-start',
   },
   photoContainer: {
     width: 100,
@@ -54,34 +93,46 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F0F0',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+
+  },
+  cameraIcon: {
+    width: 40,
+    height: 40,
   },
   photoText: {
-    fontSize: 12,
-    color: '#888',
+    fontSize: 13,
+    color: '#666666',
+    marginTop: 16,
+    marginBottom: 38,
   },
   input: {
     width: '100%',
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    height: 52,
+    borderWidth: 2,
+    borderColor: '#121212',
     borderRadius: 8,
     paddingHorizontal: 15,
-    fontSize: 16,
-    marginBottom: 20,
+    fontSize: 18,
+    marginBottom: 291,
     backgroundColor: '#FFF',
   },
   startButton: {
     width: '100%',
     height: 50,
-    backgroundColor: '#000',
+    backgroundColor: '#121212',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
   startButtonText: {
-    color: '#FFF',
+    color: '#C6FF6B',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  disabledButton: {
+    backgroundColor: '#CCC',
+  },
+  disabledButtonText: {
+    color: '#FFF',
   },
 });

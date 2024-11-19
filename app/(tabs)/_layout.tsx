@@ -1,7 +1,6 @@
 import React from "react";
 import { Tabs } from "expo-router";
-import { ImageSourcePropType, Pressable } from "react-native";
-
+import { ImageSourcePropType } from "react-native";
 import { Image } from "react-native";
 
 import { useColorScheme } from "@/components/useColorScheme";
@@ -42,19 +41,23 @@ export default function TabLayout() {
     { name: "mypage", title: "마이" },
   ];
 
+  const hiddenTabs = ["schedule/index", "schedule/date", "schedule/place"]; 
+
   return (
     <Tabs
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: "black",
         tabBarInactiveTintColor: "black",
-        tabBarStyle: {
-          borderTopWidth: 2,
-          backgroundColor: "white",
-          borderTopColor: "black",
-          height: "10%",
-        },
-      }}
+        tabBarStyle: hiddenTabs.includes(route.name)
+          ? { display: "none" } 
+          : {
+              borderTopWidth: 2,
+              backgroundColor: "white",
+              borderTopColor: "black",
+              height: "10%",
+            },
+      })}
     >
       {TabLists.map((tab, i) => (
         <Tabs.Screen

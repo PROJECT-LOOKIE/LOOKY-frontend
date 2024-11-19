@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet } from "react-native";
 
 interface ProgressBarProps {
-  activeStep: number; // 1, 2, 3 중 하나
+  activeStep: number; 
 }
 
 export default function ProgressBar({ activeStep }: ProgressBarProps) {
@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     height: 5,
-    marginBottom: 48,
+    marginBottom: 47,
     marginHorizontal: -20,
   },
   progressActive: {

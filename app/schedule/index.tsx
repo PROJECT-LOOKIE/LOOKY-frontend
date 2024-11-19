@@ -4,6 +4,7 @@ import EmojiKeyboard from "rn-emoji-keyboard";
 import Header from "../../components/schedule/Header";
 import ProgressBar from "../../components/schedule/Progressbar";
 import NextButton from "../../components/schedule/NextButton";
+import { router } from "expo-router";
 
 export default function ScheduleName() {
   const [emoji, setEmoji] = useState("🤔");
@@ -45,7 +46,7 @@ export default function ScheduleName() {
         onChangeText={setScheduleName}
       />
 
-      <NextButton text="다음" onPress={() => console.log("다음 화면")} />
+      <NextButton text="다음" onPress={() => router.push("./date")} />
     </View>
   );
 }

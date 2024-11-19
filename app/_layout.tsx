@@ -60,6 +60,9 @@ function RootLayoutNav() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="login/index" options={{ headerShown: false }} />
+        <Stack.Screen name="schedule/index" options={{ headerShown: false }} />
+        <Stack.Screen name="schedule/date" options={{ headerShown: false }} />
+        <Stack.Screen name="schedule/place" options={{ headerShown: false }} />
         {/* <Stack.Screen name="modal" options={{ presentation: "modal" }} /> */}
       </Stack>
     </ThemeProvider>

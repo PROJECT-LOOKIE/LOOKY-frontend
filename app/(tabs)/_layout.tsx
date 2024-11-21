@@ -28,7 +28,7 @@ export default function TabLayout() {
       default: require("../../assets/images/lookTabDefault.png"),
       active: require("../../assets/images/lookTabActive.png"),
     },
-    mypage: {
+    "myPage/index": {
       default: require("../../assets/images/mypageTabDefault.png"),
       active: require("../../assets/images/mypageTabActive.png"),
     },
@@ -38,7 +38,7 @@ export default function TabLayout() {
     { name: "home/index", title: "홈" },
     { name: "closet", title: "옷장" },
     { name: "look", title: "룩" },
-    { name: "mypage", title: "마이" },
+    { name: "myPage/index", title: "마이" },
   ];
 
   const hiddenTabs = ["schedule/index", "schedule/date", "schedule/place"]; 

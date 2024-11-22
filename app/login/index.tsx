@@ -122,6 +122,7 @@ export default function Nickname() {
 
       if (response.ok) {
         Alert.alert("닉네임 설정 성공", "닉네임 설정에 성공했습니다.");
+        console.log("서버 응답:", data);
         router.push("/home");
       } else {
         Alert.alert(

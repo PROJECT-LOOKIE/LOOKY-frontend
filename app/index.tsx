@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import { Text, View, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import { WebView } from "react-native-webview";
 import { router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import Logo from "../assets/images/logo.svg";
 import KakaoIcon from "../assets/images/kakao.svg";
 import AppleIcon from "../assets/images/apple.svg";
@@ -18,7 +19,7 @@ export default function Login() {
   const kakaoAuthUrl = "http://43.201.12.36:8080/oauth2/authorization/kakao";
 
   // WebView URL 변경 시 호출
-  const handleNavigationStateChange = (event: any) => {
+  const handleNavigationStateChange = async(event: any) => {
     const url = event.url;
     console.log("현재 URL:", url);
 
@@ -33,6 +34,9 @@ export default function Login() {
 
         console.log("Access Token:", accessToken);
         console.log("Refresh Token:", refreshToken);
+
+        await SecureStore.setItemAsync("accessToken", accessToken);
+        await SecureStore.setItemAsync("refreshToken", refreshToken);
 
         setShowWebView(false);
         sendUserDataToServer(accessToken); // 서버로 요청

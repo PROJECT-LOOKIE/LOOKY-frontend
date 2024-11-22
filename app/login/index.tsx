@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextInput,
   StyleSheet,
@@ -8,51 +8,49 @@ import {
   Alert,
   Image,
 } from "react-native";
-import { router } from "expo-router"; 
-import * as ImagePicker from "expo-image-picker";
+import { router } from "expo-router";
 import CameraIcon from "../../assets/images/camera.svg";
 import BackIcon from "../../assets/images/go.svg";
-
-export const unstable_settings = {
-  initialRouteName: "nickname", 
-};
+import * as SecureStore from "expo-secure-store";
+import { selectImage, uploadImageToS3 } from "../../components/nickname/ImagePickerComponent"; // 유틸 함수 가져오기
 
 export default function Nickname() {
   const [nickname, setNickname] = useState("");
   const [isError, setIsError] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
-  // 닉네임 유효성 검증
+  useEffect(() => {
+    const getToken = async () => {
+      try {
+        const token = await SecureStore.getItemAsync("accessToken");
+        if (token) {
+          setAccessToken(token);
+        } else {
+          Alert.alert("오류", "액세스 토큰을 가져올 수 없습니다.");
+        }
+      } catch (error) {
+        console.error("토큰 가져오기 에러:", error);
+        Alert.alert("오류", "토큰을 가져오는 중 에러가 발생했습니다.");
+      }
+    };
+    getToken();
+  }, []);
+
   const validateNickname = (text: string) => {
     const startsWithNumber = /^[0-9]/.test(text);
     const containsSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(text);
     const isInvalidLength = text.length < 4 || text.length > 16;
 
-    if (!text.trim() || startsWithNumber || containsSpecialChar || isInvalidLength) {
-      setIsError(true);
-    } else {
-      setIsError(false);
-    }
+    setIsError(
+      !text.trim() || startsWithNumber || containsSpecialChar || isInvalidLength
+    );
   };
 
-  // 사진 선택
   const handleSelectImage = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (!permissionResult.granted) {
-      Alert.alert("권한 오류", "사진 라이브러리 접근 권한이 필요합니다.");
-      return;
-    }
-
-    const pickerResult = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!pickerResult.canceled) {
-      setSelectedImage(pickerResult.assets[0].uri);
+    const imageUri = await selectImage(); 
+    if (imageUri) {
+      setSelectedImage(imageUri);
     }
   };
 
@@ -62,27 +60,75 @@ export default function Nickname() {
       return;
     }
 
+    if (!accessToken) {
+      Alert.alert("오류", "액세스 토큰이 없습니다.");
+      return;
+    }
+
     try {
-      const response = await fetch("http://43.201.12.36:8080/api/v1/user", {
+      let filePathOnServer = null;
+
+      if (selectedImage) {
+        const presignedResponse = await fetch(
+          "https://lookie.store/api/v1/file",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify({
+              prefix: "/images/profile",
+              fileName: `${Date.now()}_${selectedImage.split("/").pop()}`,
+            }),
+          }
+        );
+
+        const presignedData = await presignedResponse.json();
+
+        if (presignedData.result.code !== 200) {
+          Alert.alert(
+            "오류",
+            presignedData.result.message ||
+              "파일 업로드 URL 생성에 실패했습니다."
+          );
+          return;
+        }
+
+        const presignedUrl = presignedData.payload.url;
+        filePathOnServer = presignedData.payload.filePath;
+
+        if (!presignedUrl) {
+          Alert.alert("오류", "Presigned URL이 생성되지 않았습니다.");
+          return;
+        }
+
+        await uploadImageToS3(presignedUrl, selectedImage); 
+      }
+
+      const response = await fetch("https://lookie.store/api/v1/user", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
           nickname,
-          filePath: selectedImage,
+          filePath: filePathOnServer,
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        console.log("서버 응답:", data);
         Alert.alert("닉네임 설정 성공", "닉네임 설정에 성공했습니다.");
+        console.log("서버 응답:", data);
         router.push("/home");
       } else {
-        console.error("서버 에러:", data);
-        Alert.alert("닉네임 설정 실패", "서버와의 통신에 문제가 발생했습니다.");
+        Alert.alert(
+          "닉네임 설정 실패",
+          data.message || "서버와의 통신에 문제가 발생했습니다."
+        );
       }
     } catch (error) {
       console.error("API 요청 에러:", error);
@@ -97,17 +143,20 @@ export default function Nickname() {
       </TouchableOpacity>
 
       <Text style={styles.title}>
-        루키에서 사용 할{'\n'}닉네임을 적어주세요!
+        루키에서 사용 할{"\n"}닉네임을 적어주세요!
       </Text>
 
-      <TouchableOpacity style={styles.photoContainer} onPress={handleSelectImage}>
+      <TouchableOpacity
+        style={styles.photoContainer}
+        onPress={handleSelectImage}
+      >
         {selectedImage ? (
           <Image source={{ uri: selectedImage }} style={styles.photo} />
         ) : (
           <CameraIcon style={styles.cameraIcon} />
         )}
       </TouchableOpacity>
-      <Text style={styles.photoText}>사진 선택해주세요.</Text>
+      <Text style={styles.photoText}>사진을 선택해주세요.</Text>
 
       <TextInput
         style={[styles.input, isError && styles.inputError]}

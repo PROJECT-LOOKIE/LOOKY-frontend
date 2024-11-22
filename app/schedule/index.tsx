@@ -5,11 +5,29 @@ import Header from "../../components/schedule/Header";
 import ProgressBar from "../../components/schedule/Progressbar";
 import NextButton from "../../components/schedule/NextButton";
 import { router } from "expo-router";
+import { Alert } from "react-native";
+import {saveDataSecurely} from "../../utils/schedule/stroageUtills";
 
 export default function ScheduleName() {
   const [emoji, setEmoji] = useState("🤔");
   const [isOpen, setIsOpen] = useState(false);
   const [scheduleName, setScheduleName] = useState("");
+
+    // 일정 이름 저장 함수
+    const saveScheduleName = async () => {
+      if (!scheduleName.trim()) {
+        Alert.alert("오류", "일정 이름을 입력해주세요.");
+        return;
+      }
+      try {
+        await saveDataSecurely("name", scheduleName); 
+        console.log("일정 이름 저장 완료:", scheduleName);
+        router.push("./date"); 
+      } catch (error) {
+        console.error("일정 이름 저장 실패:", error);
+        Alert.alert("오류", "일정 이름을 저장하는 중 문제가 발생했습니다.");
+      }
+    };
 
   return (
     <View style={styles.container}>
@@ -46,7 +64,7 @@ export default function ScheduleName() {
         onChangeText={setScheduleName}
       />
 
-      <NextButton text="다음" onPress={() => router.push("./date")} />
+      <NextButton text="다음" onPress={saveScheduleName} />
     </View>
   );
 }

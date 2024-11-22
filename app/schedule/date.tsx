@@ -1,12 +1,29 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TextInput } from "react-native";
+import { View, Text, StyleSheet, TextInput, Alert } from "react-native";
 import Header from "../../components/schedule/Header";
 import ProgressBar from "../../components/schedule/Progressbar";
 import NextButton from "../../components/schedule/NextButton";
 import { router } from "expo-router";
+import { saveDataSecurely } from "@/utils/schedule/stroageUtills";
 
 export default function Date() {
     const [schedulDate, setScheduleDate] = useState("");
+
+    const saveLocation = async () => {
+        if (!schedulDate.trim()) {
+          Alert.alert("오류", "일정을 입력하세요.");
+          return;
+        }
+    
+        try {
+          await saveDataSecurely("location", schedulDate); 
+          console.log("Location 저장 완료:", schedulDate);
+          router.push("./place"); 
+        } catch (error) {
+          console.error("Location 저장 실패:", error);
+          Alert.alert("오류", "위치를 저장하는 중 문제가 발생했습니다.");
+        }
+      };
 
     return (
         <View style={styles.container}>
@@ -24,7 +41,7 @@ export default function Date() {
         onChangeText={setScheduleDate}
       />
     
-        <NextButton text="다음" onPress={() => router.push("./place")} />
+    <NextButton text="다음" onPress={saveLocation} />
         </View>
     );
 }

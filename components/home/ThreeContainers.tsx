@@ -61,6 +61,7 @@ export default function ThreeContainers() {
 const styles = StyleSheet.create({
   scrollContainer: {
     alignItems: "center",
+    backgroundColor: "#F4F8F3",
   },
   itemContainer: {
     backgroundColor: "#FFF",

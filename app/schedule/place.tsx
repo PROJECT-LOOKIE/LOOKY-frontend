@@ -69,6 +69,12 @@ export default function Place() {
 
       if (response.ok) {
         Alert.alert("성공", "일정이 생성되었습니다!");
+
+        await saveDataSecurely(
+          "shareMessage",
+          `루키 초대하기 ${scheduleData.name} - ${scheduleData.date}`
+        );
+
         // 데이터 삭제
         await deleteDataSecurely("name");
         await deleteDataSecurely("date");
@@ -76,7 +82,7 @@ export default function Place() {
         await deleteDataSecurely("atmosphere");
         await deleteDataSecurely("decoration");
         router.push("/home"); 
-        
+
       } else if (response.status === 401) {
         Alert.alert("오류", "인증이 만료되었습니다. 다시 로그인해주세요.");
         router.push("/login");

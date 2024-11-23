@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView } from "react-native";
+import { Alert, ScrollView, Share } from "react-native";
 import Header from "../../../components/home/Header";
 import WeatherInfo from "../../../components/home/WeatherInfo";
 import Schedule from "../../../components/home/Schedule";
-import { saveDataSecurely } from "@/utils/schedule/stroageUtills";
+import { deleteDataSecurely, getDataSecurely, saveDataSecurely } from "@/utils/schedule/stroageUtills";
 
 export default function TabOneScreen() {
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(new Date()); // 초기값은 오늘 날짜
+  const [selectedDate, setSelectedDate] = useState(new Date()); 
 
   // selectedDate를 SecureStore에 저장하는 함수
   const saveDateToStorage = async (date: Date) => {
     try {
-      await saveDataSecurely("date", date.toISOString()); // ISO 형식으로 저장
+      await saveDataSecurely("date", date.toISOString()); 
       console.log("Date 저장 성공:", date);
     } catch (error) {
       console.error("Date 저장 실패:", error);
@@ -23,6 +23,26 @@ export default function TabOneScreen() {
   useEffect(() => {
     saveDateToStorage(selectedDate);
   }, [selectedDate]);
+
+  // 공유 모달 실행 함수
+  const showShareModal = async () => {
+    try {
+      const message = await getDataSecurely("shareMessage"); 
+      if (message) {
+        await Share.share({
+          message: message, 
+        });
+        await deleteDataSecurely("shareMessage"); // 공유 후 삭제
+      }
+    } catch (error) {
+      Alert.alert("오류", "공유 모달을 띄우는 중 문제가 발생했습니다.");
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    showShareModal();
+  }, []);
 
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>

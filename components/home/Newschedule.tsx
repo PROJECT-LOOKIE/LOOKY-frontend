@@ -7,6 +7,7 @@ import PlaceIcon from "../../assets/images/place.svg";
 import ArrowIcon from "../../assets/images/arrow.svg";
 import EmptyLookSection from "../../components/home/EmptyLookSection";
 import TwoContainers from "../../components/home/TwoContainers";
+import ThreeContainers from "./ThreeContainers";
 
 
 export default function NewscheduleEmpty() {
@@ -40,7 +41,8 @@ export default function NewscheduleEmpty() {
 
       {/* EmptyLookSection 컴포넌트 사용 */}
       {/* <EmptyLookSection></EmptyLookSection> */}
-      <TwoContainers></TwoContainers>
+      {/* <TwoContainers></TwoContainers> */}
+      <ThreeContainers></ThreeContainers>
     </View>
   );
 }

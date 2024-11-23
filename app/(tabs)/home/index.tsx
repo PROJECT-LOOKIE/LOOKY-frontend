@@ -45,13 +45,13 @@ export default function TabOneScreen() {
   }, []);
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: "#F4F8F3" }}>
       {/* Header 컴포넌트 */}
       <Header
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-        selectedDayIndex={selectedDayIndex}
-        setSelectedDayIndex={setSelectedDayIndex}
+      selectedDate={selectedDate}
+      setSelectedDate={setSelectedDate}
+      selectedDayIndex={selectedDayIndex}
+      setSelectedDayIndex={setSelectedDayIndex}
       />
 
       {/* WeatherInfo 컴포넌트 */}

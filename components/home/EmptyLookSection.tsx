@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 20,
     position: "relative",
+    backgroundColor: "#FFFFFF",
   },
   emptyIcon: {
     marginBottom: 10,

@@ -1,12 +1,13 @@
 import React from "react";
 import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { router } from "expo-router"; 
+import { router } from "expo-router";
 import TagIcon from "../../assets/images/#.svg";
 import PeopleIcon from "../../assets/images/people.svg";
 import PlaceIcon from "../../assets/images/place.svg";
-import EmptyLookIcon from "../../assets/images/emptylook.svg"; 
-import TalkIcon from "../../assets/images/talk.svg"; 
-import ArrowIcon from "../../assets/images/arrow.svg"; 
+import ArrowIcon from "../../assets/images/arrow.svg";
+import EmptyLookSection from "../../components/home/EmptyLookSection";
+import TwoContainers from "../../components/home/TwoContainers";
+
 
 export default function NewscheduleEmpty() {
   return (
@@ -16,7 +17,7 @@ export default function NewscheduleEmpty() {
         <View style={styles.titleRow}>
           <Text style={styles.emoji}>🏃‍♂️</Text>
           <Text style={styles.scheduleTitle}>한강공원 런닝</Text>
-          <TouchableOpacity onPress={() => router.push("/home")}> // 옷장으로 이동
+          <TouchableOpacity onPress={() => router.push("/home")}>
             <ArrowIcon width={16} height={16} style={styles.arrowIcon} />
           </TouchableOpacity>
         </View>
@@ -37,17 +38,9 @@ export default function NewscheduleEmpty() {
         </View>
       </View>
 
-      {/* 아직 룩을 선택 안했어요 섹션 */}
-      <TouchableOpacity style={styles.emptyLookContainer} onPress={() => router.push("/home")}> // 여기서 옷장으로 이동
-        <EmptyLookIcon width={43} height={43} style={styles.emptyIcon} />
-        <Text style={styles.emptyText}>아직 룩을{"\n"}선택 안했어요</Text>
-
-        {/* 사용자 정보 (검정색 박스) */}
-        <View style={styles.userBar}>
-          <TalkIcon width={24} height={24} style={styles.userIcon} />
-          <Text style={styles.userName}>김강민</Text>
-        </View>
-      </TouchableOpacity>
+      {/* EmptyLookSection 컴포넌트 사용 */}
+      {/* <EmptyLookSection></EmptyLookSection> */}
+      <TwoContainers></TwoContainers>
     </View>
   );
 }
@@ -93,48 +86,5 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 14,
     color: "#121212",
-  },
-  emptyLookContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 2,
-    borderColor: "#121212",
-    height: 270,
-    borderRadius: 8,
-    padding: 20,
-    position: "relative",
-  },
-  emptyIcon: {
-    marginBottom: 10,
-    textAlign: "center",
-    alignItems: "center",
-  },
-  emptyText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#9A9A9A",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  userBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    backgroundColor: "#121212", 
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderRadius: 0,
-    position: "absolute",
-    alignSelf: "stretch",
-    bottom: 0,
-    width: "113%", 
-  },
-  userIcon: {
-    marginRight: 10,
-  },
-  userName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#FFF",
   },
 });

@@ -185,8 +185,13 @@ const styles = StyleSheet.create({
     height: 60,
   },
   selectedDay: {
-    backgroundColor: '#ccff99',
+    backgroundColor: "#C9FF65", 
     borderRadius: 37,
+    shadowColor: "#C9FF65", 
+    shadowOffset: { width: 0, height: 0 }, 
+    shadowOpacity: 0.6, 
+    shadowRadius: 10, 
+    elevation: 10, 
   },
   dayText: {
     fontSize: 14,

@@ -24,7 +24,7 @@ export default function TabLayout() {
       default: require("../../assets/images/closetTabDefault.png"),
       active: require("../../assets/images/closetTabActive.png"),
     },
-    look: {
+    "look/index": {
       default: require("../../assets/images/lookTabDefault.png"),
       active: require("../../assets/images/lookTabActive.png"),
     },
@@ -37,7 +37,7 @@ export default function TabLayout() {
   const TabLists = [
     { name: "home/index", title: "홈" },
     { name: "closet", title: "옷장" },
-    { name: "look", title: "룩" },
+    { name: "look/index", title: "룩" },
     { name: "myPage/index", title: "마이" },
   ];
 

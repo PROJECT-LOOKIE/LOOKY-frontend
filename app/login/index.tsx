@@ -121,6 +121,9 @@ export default function Nickname() {
       const data = await response.json();
 
       if (response.ok) {
+        if (filePathOnServer) {
+          await SecureStore.setItemAsync('userProfileImage', filePathOnServer);
+        }
         Alert.alert("닉네임 설정 성공", "닉네임 설정에 성공했습니다.");
         console.log("서버 응답:", data);
         router.push("/home");

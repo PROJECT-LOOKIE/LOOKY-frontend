@@ -1,8 +1,28 @@
 import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import { Text } from "@/components/Themed";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import * as SecureStore from "expo-secure-store";
 
 export default function TabFourScreen() {
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadProfileImage = async () => {
+      try {
+        const imagePath = await SecureStore.getItemAsync('userProfileImage');
+        if (imagePath) {
+          // S3 이미지 URL 생성 (예시 URL, 실제 S3 도메인으로 수정 필요)
+          const imageUrl = `https://your-s3-bucket.amazonaws.com${imagePath}`;
+          setProfileImage(imageUrl);
+        }
+      } catch (error) {
+        console.error('프로필 이미지 로드 실패:', error);
+      }
+    };
+
+    loadProfileImage();
+  }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.mainContent}>
@@ -11,7 +31,11 @@ export default function TabFourScreen() {
           <View style={styles.profileImageWrapper}>
             <Image
               style={styles.profileImage}
-              source={{ uri: 'https://via.placeholder.com/100' }} // 프로필 이미지
+              source={
+                profileImage
+                  ? { uri: profileImage }
+                  : require('../../../assets/images/default-profile.png')
+              }
             />
           </View>
           <View style={styles.profileInfo}>
@@ -95,9 +119,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profileImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: '100%',
+    height: '100%',
+    borderRadius: 40,
+    resizeMode: 'cover',
   },
   profileInfo: {
     marginLeft: 15,

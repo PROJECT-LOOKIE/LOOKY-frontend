@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import Header from "../../components/schedule/Header";
@@ -7,7 +8,7 @@ import CustomSlider from "../../components/schedule/CustomSlider";
 import CategorySelector from "../../components/schedule/CategorySelector";
 import LevelDescription from "../../components/schedule/LevelDescription";
 import { router } from "expo-router";
-import { saveDataSecurely, getDataSecurely, deleteDataSecurely } from "../../utils/schedule/stroageUtills"
+import { saveDataSecurely, getDataSecurely, deleteDataSecurely } from "../../utils/schedule/stroageUtills";
 
 export default function Place() {
   const [selectedCategory, setSelectedCategory] = useState("데이트");
@@ -76,13 +77,17 @@ export default function Place() {
         );
 
         // 데이터 삭제
-        await deleteDataSecurely("name");
-        await deleteDataSecurely("date");
-        await deleteDataSecurely("location");
-        await deleteDataSecurely("atmosphere");
-        await deleteDataSecurely("decoration");
-        router.push("/home"); 
+        // await deleteDataSecurely("name");
+        // await deleteDataSecurely("date");
+        // await deleteDataSecurely("location");
+        // await deleteDataSecurely("atmosphere");
+        // await deleteDataSecurely("decoration");
 
+        // 홈 화면으로 이동하면서 파라미터 전달
+        router.push({
+          pathname: "/home",
+          params: { showNewSchedule: "true" },
+        });
       } else if (response.status === 401) {
         Alert.alert("오류", "인증이 만료되었습니다. 다시 로그인해주세요.");
         router.push("/login");
@@ -139,7 +144,7 @@ export default function Place() {
 
       <NextButton
         text="생성하기!"
-        onPress={handleSaveData} 
+        onPress={handleSaveData}
       />
     </View>
   );

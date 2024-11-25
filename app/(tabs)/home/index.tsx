@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { Alert, ScrollView, Share } from "react-native";
+import { useLocalSearchParams } from 'expo-router';
 import Header from "../../../components/home/Header";
 import WeatherInfo from "../../../components/home/WeatherInfo";
 import Schedule from "../../../components/home/Schedule";
+import NewSchedule from "../../../components/home/Newschedule"; 
 import { deleteDataSecurely, getDataSecurely, saveDataSecurely } from "@/utils/schedule/stroageUtills";
 
 export default function TabOneScreen() {
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(new Date()); 
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  const { showNewSchedule } = useLocalSearchParams();
+  const shouldShowNewSchedule = showNewSchedule === 'true';
 
   // selectedDate를 SecureStore에 저장하는 함수
   const saveDateToStorage = async (date: Date) => {
     try {
-      await saveDataSecurely("date", date.toISOString()); 
+      await saveDataSecurely("date", date.toISOString());
       console.log("Date 저장 성공:", date);
     } catch (error) {
       console.error("Date 저장 실패:", error);
@@ -27,10 +32,10 @@ export default function TabOneScreen() {
   // 공유 모달 실행 함수
   const showShareModal = async () => {
     try {
-      const message = await getDataSecurely("shareMessage"); 
+      const message = await getDataSecurely("shareMessage");
       if (message) {
         await Share.share({
-          message: message, 
+          message: message,
         });
         await deleteDataSecurely("shareMessage"); // 공유 후 삭제
       }
@@ -48,17 +53,17 @@ export default function TabOneScreen() {
     <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: "#F4F8F3" }}>
       {/* Header 컴포넌트 */}
       <Header
-      selectedDate={selectedDate}
-      setSelectedDate={setSelectedDate}
-      selectedDayIndex={selectedDayIndex}
-      setSelectedDayIndex={setSelectedDayIndex}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+        selectedDayIndex={selectedDayIndex}
+        setSelectedDayIndex={setSelectedDayIndex}
       />
 
       {/* WeatherInfo 컴포넌트 */}
       <WeatherInfo selectedDate={selectedDate} />
 
-      {/* Schedule 컴포넌트 */}
-      <Schedule />
+      {shouldShowNewSchedule ?  
+        <NewSchedule selectedDate={selectedDate}/> : <Schedule/>}
     </ScrollView>
   );
 }

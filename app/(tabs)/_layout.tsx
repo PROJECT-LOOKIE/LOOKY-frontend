@@ -1,7 +1,7 @@
 import React from "react";
+
 import { Tabs, useSegments } from "expo-router";
 import { ImageSourcePropType, Pressable } from "react-native";
-
 import { Image } from "react-native";
 
 import { useColorScheme } from "@/components/useColorScheme";
@@ -19,7 +19,7 @@ export default function TabLayout() {
   };
 
   const TabIcons: TabIconType = {
-    home: {
+    "home/index": {
       default: require("../../assets/images/homeTabDefault.png"),
       active: require("../../assets/images/homeTabActive.png"),
     },
@@ -27,41 +27,41 @@ export default function TabLayout() {
       default: require("../../assets/images/closetTabDefault.png"),
       active: require("../../assets/images/closetTabActive.png"),
     },
-    look: {
+    "look/index": {
       default: require("../../assets/images/lookTabDefault.png"),
       active: require("../../assets/images/lookTabActive.png"),
     },
-    mypage: {
+    "myPage/index": {
       default: require("../../assets/images/mypageTabDefault.png"),
       active: require("../../assets/images/mypageTabActive.png"),
     },
   };
 
   const TabLists = [
-    { name: "home", title: "홈" },
+    { name: "home/index", title: "홈" },
     { name: "closet/index", title: "옷장" },
-    { name: "look", title: "룩" },
-    { name: "mypage", title: "마이" },
+    { name: "look/index", title: "룩" },
+    { name: "myPage/index", title: "마이" },
   ];
 
-  // 일단... 페이지 경로가 3개 이상일 때 gnb 사라지게 해둠
-  const GNBshown = segment.length >= 3 ? 0 : 1;
+  const hiddenTabs = ["schedule/index", "schedule/date", "schedule/place", "closet/detail"]; 
 
   return (
     <Tabs
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: "black",
         tabBarInactiveTintColor: "black",
-        tabBarStyle: GNBshown
-          ? {
+        tabBarStyle: hiddenTabs.includes(route.name)
+          ? { display: "none" } 
+          : {
               borderTopWidth: 2,
               backgroundColor: "white",
               borderTopColor: "black",
               height: "10%",
-            }
-          : { display: "none" },
-      }}
+            },
+      })}
+
     >
       {TabLists.map((tab, i) => (
         <Tabs.Screen

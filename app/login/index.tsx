@@ -12,7 +12,7 @@ import { router } from "expo-router";
 import CameraIcon from "../../assets/images/camera.svg";
 import BackIcon from "../../assets/images/go.svg";
 import * as SecureStore from "expo-secure-store";
-import { selectImage, uploadImageToS3 } from "../../components/nickname/ImagePickerComponent"; // 유틸 함수 가져오기
+import { selectImage, uploadImageToS3 } from "../../components/nickname/ImagePickerComponent";
 
 export default function Nickname() {
   const [nickname, setNickname] = useState("");
@@ -21,20 +21,25 @@ export default function Nickname() {
   const [accessToken, setAccessToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const getToken = async () => {
+    const checkNicknameStatus = async () => {
       try {
+        const nicknameStatus = await SecureStore.getItemAsync("nicknameSet");
         const token = await SecureStore.getItemAsync("accessToken");
-        if (token) {
-          setAccessToken(token);
+
+        if (nicknameStatus === "true" && token) {
+          router.push("/home");
+        } else if (token) {
+          setAccessToken(token); 
         } else {
-          Alert.alert("오류", "액세스 토큰을 가져올 수 없습니다.");
+          Alert.alert("오류", "로그인이 필요합니다.");
         }
       } catch (error) {
-        console.error("토큰 가져오기 에러:", error);
-        Alert.alert("오류", "토큰을 가져오는 중 에러가 발생했습니다.");
+        console.error("초기화 상태 확인 오류:", error);
+        Alert.alert("오류", "앱 초기화 중 문제가 발생했습니다.");
       }
     };
-    getToken();
+
+    checkNicknameStatus();
   }, []);
 
   const validateNickname = (text: string) => {
@@ -48,7 +53,7 @@ export default function Nickname() {
   };
 
   const handleSelectImage = async () => {
-    const imageUri = await selectImage(); 
+    const imageUri = await selectImage();
     if (imageUri) {
       setSelectedImage(imageUri);
     }
@@ -103,7 +108,7 @@ export default function Nickname() {
           return;
         }
 
-        await uploadImageToS3(presignedUrl, selectedImage); 
+        await uploadImageToS3(presignedUrl, selectedImage);
       }
 
       const response = await fetch("https://lookie.store/api/v1/user", {
@@ -121,8 +126,12 @@ export default function Nickname() {
       const data = await response.json();
 
       if (response.ok) {
+        if (filePathOnServer) {
+          await SecureStore.setItemAsync("userProfileImage", filePathOnServer);
+        }
+        // 닉네임 설정 완료 상태를 로컬에 저장
+        await SecureStore.setItemAsync("nicknameSet", "true");
         Alert.alert("닉네임 설정 성공", "닉네임 설정에 성공했습니다.");
-        console.log("서버 응답:", data);
         router.push("/home");
       } else {
         Alert.alert(

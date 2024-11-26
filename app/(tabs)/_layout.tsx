@@ -1,12 +1,15 @@
 import React from "react";
-import { Tabs } from "expo-router";
-import { ImageSourcePropType } from "react-native";
+
+import { Tabs, useSegments } from "expo-router";
+import { ImageSourcePropType, Pressable } from "react-native";
 import { Image } from "react-native";
 
 import { useColorScheme } from "@/components/useColorScheme";
+import Colors from "@/constants/Colors";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const segment = useSegments();
 
   type TabIconType = {
     [key: string]: {
@@ -20,7 +23,7 @@ export default function TabLayout() {
       default: require("../../assets/images/homeTabDefault.png"),
       active: require("../../assets/images/homeTabActive.png"),
     },
-    closet: {
+    "closet/index": {
       default: require("../../assets/images/closetTabDefault.png"),
       active: require("../../assets/images/closetTabActive.png"),
     },
@@ -36,12 +39,12 @@ export default function TabLayout() {
 
   const TabLists = [
     { name: "home/index", title: "홈" },
-    { name: "closet", title: "옷장" },
+    { name: "closet/index", title: "옷장" },
     { name: "look/index", title: "룩" },
     { name: "myPage/index", title: "마이" },
   ];
 
-  const hiddenTabs = ["schedule/index", "schedule/date", "schedule/place"]; 
+  const hiddenTabs = ["schedule/index", "schedule/date", "schedule/place", "closet/detail"]; 
 
   return (
     <Tabs
@@ -58,6 +61,7 @@ export default function TabLayout() {
               height: "10%",
             },
       })}
+
     >
       {TabLists.map((tab, i) => (
         <Tabs.Screen

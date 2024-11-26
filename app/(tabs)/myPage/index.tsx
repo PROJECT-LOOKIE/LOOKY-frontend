@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F4F8F3', // 배경색 (연한 초록색)
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 40,
     marginTop: 20,
   },
   profileImageWrapper: {
@@ -164,8 +164,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 4,
     marginBottom: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
@@ -201,8 +199,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 4,
     marginBottom: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },

@@ -1,14 +1,20 @@
 import Colors from "@/constants/Colors";
-import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  ViewStyle,
+} from "react-native";
 import { BoldText } from "./StyledText";
 import { useState } from "react";
 
 // props : 카테고리 텍스트 리스트들 [전체, 아우터, 상의, 하의 ...]
 interface CategoryProps {
   categoryList: Array<string>; // props의 타입 정의
+  style?: ViewStyle;
 }
 
-export default function Category({ categoryList }: CategoryProps) {
+export default function Category({ categoryList, style }: CategoryProps) {
   const [selectedCategory, setSelectedCategory] = useState(0);
 
   const clickCategory = (idx: number) => {
@@ -19,7 +25,7 @@ export default function Category({ categoryList }: CategoryProps) {
     <ScrollView
       horizontal // 수평 스크롤 활성화
       showsHorizontalScrollIndicator={false} // 스크롤 바 숨기기
-      contentContainerStyle={styles.container} // 스타일 적용
+      contentContainerStyle={[styles.container]} // 스타일 적용
     >
       {categoryList.map((category, idx) => {
         const isSelected = idx === selectedCategory;
@@ -46,14 +52,14 @@ export default function Category({ categoryList }: CategoryProps) {
 
 const styles = StyleSheet.create({
   container: {
+    flexGrow: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    height: "100%",
   },
   categoryItem: {
     backgroundColor: "white",
-    height: "100%",
+    height: 40,
     borderRadius: 25,
     justifyContent: "center",
     paddingHorizontal: 20,

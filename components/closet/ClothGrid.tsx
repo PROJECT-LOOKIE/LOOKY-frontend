@@ -1,6 +1,7 @@
 import { ScrollView, View, StyleSheet } from "react-native";
 import { Text } from "../Themed";
 import Colors from "@/constants/Colors";
+import { router } from "expo-router";
 
 export default function ClothGrid() {
   const items = [
@@ -26,7 +27,9 @@ export default function ClothGrid() {
     "아이템 20",
     "아이템 21",
   ];
-
+  const handleChangePage = () => {
+    router.push("/upload");
+  };
   return (
     <View style={styles.wrapper}>
       <ScrollView
@@ -35,7 +38,7 @@ export default function ClothGrid() {
       >
         {items.map((item, index) => (
           <View key={index} style={styles.item}>
-            <Text>{item}</Text>
+            <Text onPress={handleChangePage}>{item}</Text>
           </View>
         ))}
       </ScrollView>
@@ -55,11 +58,12 @@ const styles = StyleSheet.create({
   },
   item: {
     width: "30%",
-    height: 100,
+    paddingBottom: "30%",
     backgroundColor: Colors.gray100,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 10,
     borderRadius: 10,
+    position: "relative",
   },
 });

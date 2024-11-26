@@ -33,9 +33,10 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
 
     if (!result.canceled && result) {
       setSelectedImage(result.assets[0].uri); // 선택한 이미지의 URI를 상태에 저장
-
-      // 이미지 uri 를 백에게 전달 -> 누끼 제거 후 다시 받아오기 (api 정의 되고나서 구현 시작)
     }
+
+    // 이미지 uri 를 백에게 전달 -> 누끼 제거 후 다시 받아오기 (api 정의 되고나서 구현 시작)
+    console.log(`갤러리에서 선택한 이미지 url : ${selectedImage}`);
   };
 
   const openCamera = async () => {
@@ -64,6 +65,9 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
         setCapturedImage(imageUri);
       }
     }
+
+    // 이미지 uri 를 백에게 전달 -> 누끼 제거 후 다시 받아오기 (api 정의 되고나서 구현 시작)
+    console.log(`카메라로 촬영한 이미지 url : ${captureImage}`);
   };
 
   return (

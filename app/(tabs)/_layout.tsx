@@ -44,7 +44,12 @@ export default function TabLayout() {
     { name: "myPage/index", title: "마이" },
   ];
 
-  const hiddenTabs = ["schedule/index", "schedule/date", "schedule/place", "closet/detail"]; 
+  const hiddenTabs = [
+    "schedule/index",
+    "schedule/date",
+    "schedule/place",
+    "upload/detail",
+  ];
 
   return (
     <Tabs
@@ -53,7 +58,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: "black",
         tabBarInactiveTintColor: "black",
         tabBarStyle: hiddenTabs.includes(route.name)
-          ? { display: "none" } 
+          ? { display: "none" }
           : {
               borderTopWidth: 2,
               backgroundColor: "white",
@@ -61,7 +66,6 @@ export default function TabLayout() {
               height: "10%",
             },
       })}
-
     >
       {TabLists.map((tab, i) => (
         <Tabs.Screen

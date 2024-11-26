@@ -1,26 +1,63 @@
-import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
-import { Text } from "@/components/Themed";
 import React, { useState, useEffect } from "react";
+import { StyleSheet, View, TouchableOpacity, Image, Alert } from "react-native";
+import { Text } from "@/components/Themed";
 import * as SecureStore from "expo-secure-store";
 
 export default function TabFourScreen() {
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [userInfo, setUserInfo] = useState({
+    nickname: "사용자",
+    email: "이메일 없음",
+    imageUrl: null,
+  });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadProfileImage = async () => {
+    const fetchUserInfo = async () => {
       try {
-        const imagePath = await SecureStore.getItemAsync('userProfileImage');
-        if (imagePath) {
-          // S3 이미지 URL 생성 (예시 URL, 실제 S3 도메인으로 수정 필요)
-          const imageUrl = `https://your-s3-bucket.amazonaws.com${imagePath}`;
-          setProfileImage(imageUrl);
+        const token = await SecureStore.getItemAsync("accessToken");
+        if (!token) {
+          Alert.alert("오류", "엑세스 토큰이 없습니다.");
+          return;
         }
+
+        const requestUrl = "http://43.201.12.36:8080/api/v1/user/mypage";
+        console.log("요청 URL:", requestUrl);
+
+        const response = await fetch(requestUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          console.error(
+            `사용자 정보 조회 실패: ${response.status} - ${response.statusText}`
+          );
+          setError("사용자 정보를 가져오지 못했습니다.");
+          return;
+        }
+
+        const userData = await response.json();
+
+        if (userData.result.code !== 200) {
+          setError("사용자 정보 조회 중 오류가 발생했습니다.");
+          return;
+        }
+
+        setUserInfo({
+          nickname: userData.payload.nickname || "사용자",
+          email: userData.payload.email || "이메일 없음",
+          imageUrl: userData.payload.imageUrl, 
+        });
       } catch (error) {
-        console.error('프로필 이미지 로드 실패:', error);
+        console.error("API 호출 오류:", error);
+        setError("데이터를 가져오는 중 오류가 발생했습니다.");
       }
     };
 
-    loadProfileImage();
+    fetchUserInfo();
   }, []);
 
   return (
@@ -32,22 +69,21 @@ export default function TabFourScreen() {
             <Image
               style={styles.profileImage}
               source={
-                profileImage
-                  ? { uri: profileImage }
-                  : require('../../../assets/images/default-profile.png')
+                userInfo.imageUrl
+                  ? { uri: userInfo.imageUrl }
+                  : require("../../../assets/images/default-profile.png") 
               }
             />
           </View>
           <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>김강민</Text>
+            <Text style={styles.profileName}>{userInfo.nickname}</Text>
             <View style={styles.profileEmailWrapper}>
               <Image
                 style={styles.profileEmailIcon}
-                source={require('../../../assets/images/icon_kakao.png')}
+                source={require("../../../assets/images/icon_kakao.png")}
               />
-              <Text style={styles.profileEmail}>rkdals0203@naver.com</Text>
+              <Text style={styles.profileEmail}>{userInfo.email}</Text>
             </View>
-            
           </View>
         </View>
 
@@ -65,7 +101,7 @@ export default function TabFourScreen() {
               <Text style={styles.buttonText}>@Lookie 팔로우</Text>
             </TouchableOpacity>
           </View>
-          
+
           <TouchableOpacity style={styles.button}>
             <Text style={styles.buttonText}>로그아웃</Text>
           </TouchableOpacity>
@@ -94,19 +130,17 @@ export default function TabFourScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F4F8F3',
+    backgroundColor: "#F4F8F3",
     padding: 20,
     paddingTop: 60,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   mainContent: {
     flex: 1,
-    backgroundColor: '#F4F8F3',
   },
   profileSection: {
-    backgroundColor: '#F4F8F3', // 배경색 (연한 초록색)
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 40,
     marginTop: 20,
   },
@@ -114,29 +148,27 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#E0E0E0', // 프로필 배경색
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#E0E0E0",
+    justifyContent: "center",
+    alignItems: "center",
   },
   profileImage: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     borderRadius: 40,
-    resizeMode: 'cover',
+    resizeMode: "cover",
   },
   profileInfo: {
     marginLeft: 15,
-    backgroundColor: '#F4F8F3', // 배경색 (연한 초록색)
   },
   profileName: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#121212',
+    fontWeight: "bold",
+    color: "#121212",
   },
   profileEmailWrapper: {
-    backgroundColor: '#F4F8F3', // 배경색 (연한 초록색)
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 8,
   },
   profileEmailIcon: {
@@ -146,21 +178,20 @@ const styles = StyleSheet.create({
   },
   profileEmail: {
     fontSize: 14,
-    fontWeight: 'bold',
-    color: '#888',
+    fontWeight: "bold",
+    color: "#888",
   },
   noticeText: {
-    textAlign: 'left',
+    textAlign: "left",
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     marginBottom: 20,
   },
   buttonSection: {
     marginBottom: 20,
-    backgroundColor: '#F4F8F3', // 배경색 (연한 초록색)
   },
   button: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     padding: 15,
     borderRadius: 4,
     marginBottom: 10,
@@ -169,34 +200,33 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: '#333',
-    textAlign: 'left',
+    color: "#333",
+    textAlign: "left",
   },
   termsSection: {
-    flexDirection: 'row',
-    backgroundColor: '#F4F8F3', // 배경색 (연한 초록색)
-    justifyContent: 'center',
-    marginTop: 20,  // 로그아웃 버튼과의 간격
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
   },
   termsText: {
     fontSize: 12,
-    color: '#999',
+    color: "#999",
   },
   termsDivider: {
     fontSize: 12,
-    color: '#999',
+    color: "#999",
     marginHorizontal: 8,
   },
   deleteAccount: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 20,
   },
   deleteAccountText: {
     fontSize: 12,
-    color: '#999',
+    color: "#999",
   },
   combinedButton: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 4,
     marginBottom: 10,
     shadowOffset: { width: 0, height: 2 },
@@ -207,7 +237,7 @@ const styles = StyleSheet.create({
   },
   horizontalDivider: {
     height: 1,
-    backgroundColor: '#E5E5E5',
+    backgroundColor: "#E5E5E5",
     marginHorizontal: 15,
   },
 });

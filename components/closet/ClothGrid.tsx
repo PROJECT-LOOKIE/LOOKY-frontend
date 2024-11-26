@@ -35,7 +35,7 @@ export default function ClothGrid() {
       >
         {items.map((item, index) => (
           <View key={index} style={styles.item}>
-            <Text>{item}</Text>
+            {/* <Text>{item}</Text> */}
           </View>
         ))}
       </ScrollView>
@@ -55,11 +55,12 @@ const styles = StyleSheet.create({
   },
   item: {
     width: "30%",
-    height: 100,
+    paddingBottom: "30%",
     backgroundColor: Colors.gray100,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 10,
     borderRadius: 10,
+    position: "relative",
   },
 });

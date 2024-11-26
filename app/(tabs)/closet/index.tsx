@@ -1,7 +1,6 @@
 import { StyleSheet } from "react-native";
 
-import { Text, View } from "@/components/Themed";
-import CordiZone from "@/components/closet/CordiZone";
+import { View } from "@/components/Themed";
 import ClothType from "@/components/closet/ClothType";
 import ClothGrid from "@/components/closet/ClothGrid";
 import Colors from "@/constants/Colors";
@@ -14,7 +13,6 @@ export default function Closet() {
       {/* <CordiZone /> */}
       <ClothType />
       <ClothGrid />
-
       <AddButton />
     </View>
   );
@@ -29,14 +27,4 @@ const styles = StyleSheet.create({
     paddingTop: 75,
     paddingHorizontal: 20,
   },
-
-  // title: {
-  //   fontSize: 20,
-  //   fontWeight: "bold",
-  // },
-  // separator: {
-  //   marginVertical: 30,
-  //   height: 1,
-  //   width: "80%",
-  // },
 });

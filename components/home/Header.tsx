@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -30,7 +30,7 @@ export default function Header({
 
   function getWeekDates(date: Date) {
     const day = date.getDay();
-    const diff = (day === 0 ? -6 : 1) - day;
+    const diff = (day === 0 ? -6 : 1) - day; 
     const monday = new Date(date);
     monday.setDate(date.getDate() + diff);
 
@@ -44,6 +44,19 @@ export default function Header({
   }
 
   const weekDates = getWeekDates(selectedDate);
+
+  useEffect(() => {
+    const today = new Date();
+    const todayIndex = weekDates.findIndex(
+      (date) =>
+        date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear()
+    );
+    if (todayIndex !== -1) {
+      setSelectedDayIndex(todayIndex); 
+    }
+  }, [weekDates]);
 
   const showDatePicker = () => {
     setPickerVisible(true);
@@ -109,7 +122,7 @@ export default function Header({
               ]}
               onPress={() => {
                 setSelectedDayIndex(index);
-                setSelectedDate(dateObj); 
+                setSelectedDate(dateObj);
               }}
             >
               <Text
@@ -170,11 +183,11 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     position: 'absolute',
-    top: 110, 
+    top: 110,
     left: 20,
     right: 70,
     backgroundColor: '#fff',
-    borderRadius: 20, 
+    borderRadius: 20,
   },
   dayButton: {
     alignItems: 'center',
@@ -185,13 +198,13 @@ const styles = StyleSheet.create({
     height: 60,
   },
   selectedDay: {
-    backgroundColor: "#C9FF65", 
+    backgroundColor: "#C9FF65",
     borderRadius: 37,
-    shadowColor: "#C9FF65", 
-    shadowOffset: { width: 0, height: 0 }, 
-    shadowOpacity: 0.6, 
-    shadowRadius: 10, 
-    elevation: 10, 
+    shadowColor: "#C9FF65",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 10,
+    elevation: 10,
   },
   dayText: {
     fontSize: 14,

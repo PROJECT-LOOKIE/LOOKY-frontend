@@ -75,7 +75,9 @@ export default function NewSchedule({ selectedDate }: NewScheduleProps) {
     <View style={styles.scheduleContainer}>
       <View style={styles.headerContainer}>
         <View style={styles.titleRow}>
-          <Text style={styles.emoji}>{scheduleData?.emoji}</Text>
+        <Text style={styles.emoji}>
+        {scheduleData?.emoji || "🏃‍♂️"}
+        </Text>
           <Text style={styles.scheduleTitle}>{scheduleData?.name}</Text>
           <TouchableOpacity onPress={() => router.push("/home")}>
             <ArrowIcon width={16} height={16} style={styles.arrowIcon} />

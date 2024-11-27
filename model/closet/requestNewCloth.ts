@@ -9,3 +9,11 @@ export type requestNewClothDTO = {
   price: Price;
   imageUrl: ImageUrl;
 };
+
+export type responseClothInfoDTO = {
+  id: string;
+  brand: string;
+  category: string;
+  price: number;
+  imageUrl: string;
+};

@@ -66,6 +66,7 @@ function RootLayoutNav() {
         <Stack.Screen name="schedule/place" options={{ headerShown: false }} />
         <Stack.Screen name="upload/index" options={{ headerShown: false }} />
         <Stack.Screen name="upload/revise" options={{ headerShown: false }} />
+        <Stack.Screen name="cordi/index" options={{ headerShown: false }} />
         {/* <Stack.Screen name="modal" options={{ presentation: "modal" }} /> */}
       </Stack>
     </ThemeProvider>

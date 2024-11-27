@@ -29,16 +29,13 @@ export const postClothInfo = async ({
 export const getClosetItems = async () => {
   const accessToken = await getToken();
 
-  const response = await fetch(
-    `${process.env.REACT_NATIVE_API}/api/v1/closet/item`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+  const response = await fetch(`https://lookie.store/api/v1/closet/item`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
   return response.json();
 };

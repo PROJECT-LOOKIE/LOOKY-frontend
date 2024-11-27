@@ -30,7 +30,7 @@ export default function ClothRevise() {
   };
 
   const handlePress = () => {
-    console.log("등록하기");
+    router.push("/cordi");
   };
 
   return (

@@ -1,47 +1,81 @@
-import { ScrollView, View, StyleSheet } from "react-native";
-import { Text } from "../Themed";
+import {
+  ScrollView,
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+  RefreshControl,
+} from "react-native";
 import Colors from "@/constants/Colors";
 import { router } from "expo-router";
+import { useEffect, useState, useCallback } from "react";
+import { getClosetItems } from "@/api/closet";
+import { responseClothInfoDTO } from "@/model/closet/requestNewCloth";
 
 export default function ClothGrid() {
-  const items = [
-    "아이템 1",
-    "아이템 2",
-    "아이템 3",
-    "아이템 4",
-    "아이템 5",
-    "아이템 6",
-    "아이템 7",
-    "아이템 8",
-    "아이템 9",
-    "아이템 10",
-    "아이템 11",
-    "아이템 12",
-    "아이템 13",
-    "아이템 14",
-    "아이템 15",
-    "아이템 16",
-    "아이템 17",
-    "아이템 18",
-    "아이템 19",
-    "아이템 20",
-    "아이템 21",
-  ];
+  const [clothesInfo, setClothesInfo] = useState<responseClothInfoDTO[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [refreshing, setRefreshing] = useState(false); // 새로고침 상태 관리
+
+  const fetchClothes = async () => {
+    try {
+      const clothes = await getClosetItems();
+      setClothesInfo(clothes.payload || []);
+    } catch (error) {
+      console.error("Failed to fetch clothes:", error);
+    }
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    fetchClothes().finally(() => setLoading(false));
+  }, []);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchClothes().finally(() => setRefreshing(false));
+  }, []);
+
   const handleChangePage = () => {
     router.push("/upload");
   };
+
   return (
     <View style={styles.wrapper}>
-      <ScrollView
-        contentContainerStyle={styles.container}
-        showsVerticalScrollIndicator={false}
-      >
-        {items.map((item, index) => (
-          <View key={index} style={styles.item}>
-            <Text onPress={handleChangePage}>{item}</Text>
-          </View>
-        ))}
-      </ScrollView>
+      {loading ? (
+        <ActivityIndicator size="large" color={Colors.yellowGreen} />
+      ) : (
+        <ScrollView
+          contentContainerStyle={styles.container}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={Colors.gray600}
+            />
+          }
+        >
+          {clothesInfo.length > 0 ? (
+            clothesInfo.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={styles.item}
+                onPress={handleChangePage}
+              >
+                <Image
+                  source={{ uri: item.imageUrl }}
+                  style={styles.image}
+                  resizeMode="cover"
+                />
+              </TouchableOpacity>
+            ))
+          ) : (
+            <></>
+          )}
+        </ScrollView>
+      )}
     </View>
   );
 }
@@ -49,21 +83,25 @@ export default function ClothGrid() {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
+    backgroundColor: Colors.background,
   },
   container: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
-    width: "100%",
+    padding: 10,
   },
   item: {
     width: "30%",
-    paddingBottom: "30%",
     backgroundColor: Colors.gray100,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 10,
     borderRadius: 10,
-    position: "relative",
+    overflow: "hidden",
+  },
+  image: {
+    width: "100%",
+    height: 100,
   },
 });

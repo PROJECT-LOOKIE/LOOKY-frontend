@@ -1,32 +1,92 @@
 import React, { useState, useEffect } from "react";
 import { Alert, ScrollView, Share } from "react-native";
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from "expo-router"; 
 import Header from "../../../components/home/Header";
 import WeatherInfo from "../../../components/home/WeatherInfo";
 import Schedule from "../../../components/home/Schedule";
-import NewSchedule from "../../../components/home/Newschedule"; 
-import { deleteDataSecurely, getDataSecurely, saveDataSecurely } from "@/utils/schedule/stroageUtills";
+import NewSchedule from "../../../components/home/Newschedule";
+import {
+  deleteDataSecurely,
+  getDataSecurely,
+} from "@/utils/schedule/stroageUtills";
 
 export default function TabOneScreen() {
   const [selectedDayIndex, setSelectedDayIndex] = useState(0);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isScheduleAvailable, setIsScheduleAvailable] = useState(false);
+  const [scheduleData, setScheduleData] = useState<any>(null);
 
-  const { showNewSchedule } = useLocalSearchParams();
-  const shouldShowNewSchedule = showNewSchedule === 'true';
+  const { showNewSchedule, selectedDate: paramDate } = useLocalSearchParams();
 
-  // selectedDate를 SecureStore에 저장하는 함수
-  const saveDateToStorage = async (date: Date) => {
+  useEffect(() => {
+    if (paramDate) {
+      console.log("Received paramDate:", paramDate);
+      const [year, month, day] = (paramDate as string).split("-").map(Number);
+      const parsedDate = new Date(year, month - 1, day);
+      setSelectedDate(parsedDate);
+      console.log("Selected Date set from paramDate:", parsedDate);
+    }
+  }, [paramDate]);
+
+  useEffect(() => {
+    console.log("Current selectedDate:", selectedDate);
+  }, [selectedDate]);
+
+  const checkScheduleExists = async (date: Date) => {
     try {
-      await saveDataSecurely("date", date.toISOString());
-      console.log("Date 저장 성공:", date);
+      const accessToken = await getDataSecurely("accessToken");
+      if (!accessToken) {
+        Alert.alert("오류", "엑세스 토큰이 없습니다.");
+        return false;
+      }
+
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+
+      const requestUrl = `https://lookie.store/api/v1/schedule?year=${year}&month=${month}&day=${day}`;
+
+      const response = await fetch(requestUrl, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      if (!response.ok) {
+        console.error(
+          `스케줄 확인 오류: ${response.status} - ${response.statusText}`
+        );
+        return false;
+      }
+
+      const scheduleList = await response.json();
+
+      if (!scheduleList.payload || scheduleList.payload.length === 0) {
+        setScheduleData(null);
+        return false;
+      }
+
+      const scheduleItem =
+        scheduleList.payload[scheduleList.payload.length - 1];
+      setScheduleData(scheduleItem);
+      return true;
     } catch (error) {
-      console.error("Date 저장 실패:", error);
+      console.error("일정 확인 중 오류 발생:", error);
+      setScheduleData(null);
+      return false;
     }
   };
 
-  // 날짜가 변경될 때마다 SecureStore에 저장
   useEffect(() => {
-    saveDateToStorage(selectedDate);
+    if (selectedDate) {
+      const checkScheduleForDate = async () => {
+        const hasSchedule = await checkScheduleExists(selectedDate);
+        setIsScheduleAvailable(hasSchedule);
+      };
+      checkScheduleForDate();
+    }
   }, [selectedDate]);
 
   // 공유 모달 실행 함수
@@ -41,7 +101,6 @@ export default function TabOneScreen() {
       }
     } catch (error) {
       Alert.alert("오류", "공유 모달을 띄우는 중 문제가 발생했습니다.");
-      console.error(error);
     }
   };
 
@@ -50,20 +109,28 @@ export default function TabOneScreen() {
   }, []);
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1, backgroundColor: "#F4F8F3" }}>
-      {/* Header 컴포넌트 */}
-      <Header
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-        selectedDayIndex={selectedDayIndex}
-        setSelectedDayIndex={setSelectedDayIndex}
-      />
-
-      {/* WeatherInfo 컴포넌트 */}
-      <WeatherInfo selectedDate={selectedDate} />
-
-      {shouldShowNewSchedule ?  
-        <NewSchedule selectedDate={selectedDate}/> : <Schedule/>}
+    <ScrollView
+      contentContainerStyle={{ flexGrow: 1, backgroundColor: "#F4F8F3" }}
+    >
+      {selectedDate && (
+        <>
+          <Header
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            selectedDayIndex={selectedDayIndex}
+            setSelectedDayIndex={setSelectedDayIndex}
+          />
+          <WeatherInfo selectedDate={selectedDate} />
+          {isScheduleAvailable ? (
+            <NewSchedule
+              selectedDate={selectedDate}
+              scheduleData={scheduleData}
+            />
+          ) : (
+            <Schedule />
+          )}
+        </>
+      )}
     </ScrollView>
   );
 }

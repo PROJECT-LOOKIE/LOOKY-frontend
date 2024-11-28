@@ -15,7 +15,11 @@ import { responseClothInfoDTO } from "@/model/closet/requestNewCloth";
 import { Mode } from "@/model/cordi/groupInfo";
 import { saveDataSecurely } from "@/utils/schedule/stroageUtills";
 
-export default function ClothGrid({ mode }: Mode) {
+type ClothGridItem = {
+  setImageUrl: (url: string) => void;
+};
+
+export default function ClothGrid({ mode, setImageUrl }: Mode & ClothGridItem) {
   const [clothesInfo, setClothesInfo] = useState<responseClothInfoDTO[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -23,7 +27,6 @@ export default function ClothGrid({ mode }: Mode) {
   const fetchClothes = async () => {
     try {
       const clothes = await getClosetItems();
-      console.log(clothes);
       setClothesInfo(clothes.payload || []);
     } catch (error) {
       console.error("Failed to fetch clothes:", error);
@@ -44,10 +47,12 @@ export default function ClothGrid({ mode }: Mode) {
     router.push({ pathname: "/upload/revise", params: { id } });
   };
 
-  const handlePick = (id: number) => {
+  const handlePick = async (id: number) => {
     console.log(`${id}번 아이템 pick`);
-    const imageUrl = clothesInfo.find((prev) => prev.id === id)?.imageUrl;
-    saveDataSecurely("pickCloth", imageUrl);
+    const pickImage = clothesInfo.find((prev) => prev.id === id)?.imageUrl;
+    if (pickImage) {
+      setImageUrl(pickImage);
+    }
   };
 
   return (

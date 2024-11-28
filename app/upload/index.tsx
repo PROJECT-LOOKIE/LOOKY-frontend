@@ -12,18 +12,22 @@ import { postClothInfo } from "@/api/closet";
 import { getDataSecurely } from "@/utils/schedule/stroageUtills";
 
 export default function ClothInfo() {
-  // const { selectedImage } = useGlobalSearchParams();
-  // let imageUrl = "";
-  // if (selectedImage) {
-  //   imageUrl = selectedImage[0];
-  // }
-
-  const imageUrl = getDataSecurely("imageUrl");
-
   const [brand, setBrand] = useState("");
   const [price, setPrice] = useState(0);
   const categoryList = ["아우터", "상의", "하의", "신발", "악세사리"];
   const [category, setCategory] = useState("아우터");
+  const [displayImage, setDisplayImage] = useState<string | null>("");
+  const [imageUrl, setImageUrl] = useState<string | null>("");
+
+  useEffect(() => {
+    const getImageData = async () => {
+      const displayImage = await getDataSecurely("displayImage");
+      const uploadImage = await getDataSecurely("uploadClothImage");
+      setDisplayImage(displayImage);
+      setImageUrl(uploadImage);
+    };
+    getImageData();
+  }, []);
 
   const handleLeftPress = () => {
     router.back();
@@ -55,7 +59,7 @@ export default function ClothInfo() {
         style={styles.background}
         isHide={true}
       />
-      <ImageContent image={imageUrl} />
+      <ImageContent image={displayImage} />
       <Text style={styles.title}>브랜드</Text>
       <CommonTextInput
         placeholder="브랜드를 입력해주세요."

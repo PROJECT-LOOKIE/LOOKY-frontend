@@ -1,5 +1,13 @@
-import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import Colors from "@/constants/Colors";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  TouchableWithoutFeedback,
+} from "react-native";
 import {
   GestureHandlerRootView,
   PanGestureHandler,
@@ -7,20 +15,23 @@ import {
   PinchGestureHandler,
   PinchGestureHandlerGestureEvent,
 } from "react-native-gesture-handler";
-import Animated, {
-  useAnimatedStyle,
-  withSpring,
-} from "react-native-reanimated";
+import Animated from "react-native-reanimated";
 
 type MakeCordiProps = {
   url: string | null;
 };
 
-const MakeCordi: React.FC<MakeCordiProps> = ({ url }) => {
-  const [imageUrl, setImageUrl] = useState(url);
-  const [imagePosition, setImagePosition] = useState({ x: 0, y: 0 });
+const ImageItem: React.FC<{
+  imageUrl: string;
+  onDelete: () => void;
+  onFocus: () => void;
+  isFocused: boolean;
+}> = ({ imageUrl, onDelete, onFocus, isFocused }) => {
+  const [imagePosition, setImagePosition] = useState({
+    x: Math.random() * 200 - 100, // -100 to 100
+    y: Math.random() * 200 - 100, // -100 to 100
+  });
   const [imageScale, setImageScale] = useState(1);
-  const [imageRot, setImageRot] = useState(0);
 
   const onGestureEvent = (event: PanGestureHandlerGestureEvent) => {
     setImagePosition({
@@ -29,48 +40,92 @@ const MakeCordi: React.FC<MakeCordiProps> = ({ url }) => {
     });
   };
 
-  console.log(imagePosition);
-
   const onPinchEvent = (event: PinchGestureHandlerGestureEvent) => {
     setImageScale(event.nativeEvent.scale);
   };
 
   return (
+    <PanGestureHandler onGestureEvent={onGestureEvent}>
+      <Animated.View
+        style={[
+          styles.imageContainer,
+          {
+            transform: [
+              { translateX: imagePosition.x },
+              { translateY: imagePosition.y },
+              { scale: imageScale },
+            ],
+            borderColor: isFocused ? "black" : "transparent", // 포커스된 이미지에만 블랙 테두리 추가
+            borderWidth: isFocused ? 3 : 0, // 포커스된 이미지에만 테두리 크기 설정
+          },
+        ]}
+      >
+        <PinchGestureHandler onGestureEvent={onPinchEvent}>
+          <Animated.View style={styles.imageWrapper}>
+            <TouchableOpacity onPress={onFocus}>
+              <Image source={{ uri: imageUrl }} style={styles.image} />
+            </TouchableOpacity>
+            {/* 삭제 버튼을 포커스된 이미지에만 보이게 설정 */}
+            {isFocused && (
+              <TouchableOpacity style={styles.closeButton} onPress={onDelete}>
+                <Text style={styles.closeButtonText}>X</Text>
+              </TouchableOpacity>
+            )}
+          </Animated.View>
+        </PinchGestureHandler>
+      </Animated.View>
+    </PanGestureHandler>
+  );
+};
+
+const MakeCordi: React.FC<MakeCordiProps> = ({ url }) => {
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [focusedIndex, setFocusedIndex] = useState<number | null>(null); // 포커싱된 이미지의 인덱스를 추적
+
+  useEffect(() => {
+    if (url) {
+      setImageUrls((prevUrls) => [...prevUrls, url]);
+      setFocusedIndex(imageUrls.length); // 새로 추가된 아이템을 포커싱
+    }
+  }, [url]);
+
+  const handleDeleteImage = (index: number) => {
+    const updatedUrls = [...imageUrls];
+    updatedUrls.splice(index, 1); // 해당 인덱스 이미지 제거
+    setImageUrls(updatedUrls);
+
+    // 삭제 후, 포커싱된 이미지가 삭제된 경우 포커스를 해제
+    if (focusedIndex === index) {
+      setFocusedIndex(null);
+    }
+  };
+
+  const handleFocusImage = (index: number) => {
+    setFocusedIndex(index); // 이미지에 포커스를 설정
+  };
+
+  // 배경 클릭 시 포커스를 해제하는 함수
+  const handleBackgroundPress = () => {
+    setFocusedIndex(null); // 포커스를 해제
+  };
+
+  return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <View style={styles.container}>
-        <View style={styles.cordiContainer}>
-          {imageUrl ? (
-            <PanGestureHandler onGestureEvent={onGestureEvent}>
-              <Animated.View
-                style={[
-                  styles.imageContainer,
-                  {
-                    transform: [
-                      { translateX: imagePosition.x },
-                      { translateY: imagePosition.y },
-                      { scale: imageScale },
-                    ],
-                  },
-                ]}
-              >
-                <PinchGestureHandler onGestureEvent={onPinchEvent}>
-                  <Animated.View style={styles.imageWrapper}>
-                    <Image source={{ uri: imageUrl }} style={styles.image} />
-                    <TouchableOpacity
-                      style={styles.closeButton}
-                      onPress={() => setImageUrl("")}
-                    >
-                      <Text style={styles.closeButtonText}>X</Text>
-                    </TouchableOpacity>
-                  </Animated.View>
-                </PinchGestureHandler>
-              </Animated.View>
-            </PanGestureHandler>
-          ) : (
-            <></>
-          )}
+      <TouchableWithoutFeedback onPress={handleBackgroundPress}>
+        <View style={styles.container}>
+          <View style={styles.cordiContainer}>
+            {imageUrls.map((imageUrl, index) => (
+              <ImageItem
+                key={index}
+                imageUrl={imageUrl}
+                onDelete={() => handleDeleteImage(index)}
+                onFocus={() => handleFocusImage(index)}
+                isFocused={focusedIndex === index}
+              />
+            ))}
+          </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </GestureHandlerRootView>
   );
 };
@@ -90,10 +145,9 @@ const styles = StyleSheet.create({
   imageContainer: {
     justifyContent: "center",
     alignItems: "center",
-    position: "relative",
-    borderWidth: 2,
-    borderColor: "black",
+    position: "absolute",
     borderStyle: "dashed",
+    borderColor: Colors.gray800,
   },
   imageWrapper: {
     position: "relative",

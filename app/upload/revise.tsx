@@ -1,4 +1,11 @@
-import { ScrollView, View, StyleSheet, Text, Button } from "react-native";
+import {
+  ScrollView,
+  View,
+  StyleSheet,
+  Text,
+  Button,
+  Alert,
+} from "react-native";
 import Colors from "@/constants/Colors";
 import { router, useGlobalSearchParams } from "expo-router";
 import CommonHeader from "@/components/CommonHeader";
@@ -41,6 +48,7 @@ export default function ClothRevise() {
     try {
       await deleteClothItem(itemId);
       router.push("/closet");
+      Alert.alert("삭제되었습니다!");
     } catch (err) {
       console.error("Failed to delete cloth item:", err);
     }
@@ -57,7 +65,8 @@ export default function ClothRevise() {
   };
 
   const handlePress = () => {
-    router.push("/cordi");
+    router.push("/closet");
+    Alert.alert("수정되었습니다!");
   };
 
   return (

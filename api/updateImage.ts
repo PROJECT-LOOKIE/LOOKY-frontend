@@ -16,7 +16,7 @@ export const requestRembg = async (file: ImagePicker.ImagePickerResult) => {
   formData.append("file", {
     uri: selectedAsset.uri,
     name: selectedAsset.fileName,
-    type: selectedAsset.type,
+    type: selectedAsset.mimeType,
   });
 
   const res = await fetch(`http://117.17.198.45:8000/api/remove`, {
@@ -31,7 +31,7 @@ export const requestRembg = async (file: ImagePicker.ImagePickerResult) => {
     throw new Error(`HTTP 에러: ${res.status}`);
   }
 
-  return res; // 호출한 곳에서 JSON 응답 처리
+  return res.blob();
 };
 
 // 1. /api/vi/file에 POST 요청 -> url, filePath 가져오기

@@ -86,7 +86,6 @@ export default function WeatherInfo({ selectedDate }: WeatherInfoProps) {
 
         setWeatherData(parsedData);
       } catch (error) {
-        console.error("날씨 데이터 가져오기 오류:", error);
         setWeatherData(null); 
       }
     };

@@ -8,7 +8,7 @@ import CustomSlider from "../../components/schedule/CustomSlider";
 import CategorySelector from "../../components/schedule/CategorySelector";
 import LevelDescription from "../../components/schedule/LevelDescription";
 import { router } from "expo-router";
-import { saveDataSecurely, getDataSecurely, deleteDataSecurely } from "../../utils/schedule/stroageUtills";
+import { saveDataSecurely, getDataSecurely } from "../../utils/schedule/stroageUtills";
 
 export default function Place() {
   const [selectedCategory, setSelectedCategory] = useState("데이트");
@@ -25,14 +25,11 @@ export default function Place() {
 
   const handleSaveData = async () => {
     try {
-      // 'atmosphere'와 'decoration' 저장
       await saveDataSecurely("atmosphere", selectedCategory);
       await saveDataSecurely("decoration", String(level));
-      console.log("Atmosphere:", selectedCategory, "Decoration:", level);
 
-      // 다른 데이터 불러오기
       const name = await getDataSecurely("name");
-      const date = await getDataSecurely("date");
+      const date = await getDataSecurely("date"); 
       const location = await getDataSecurely("location");
       const accessToken = await getDataSecurely("accessToken");
 
@@ -41,10 +38,10 @@ export default function Place() {
         return;
       }
 
-      // 날짜 형식 변환 (YYYY-MM-DD)
-      const formattedDate = date ? date.substring(0, 10) : null;
+      const formattedDate = date ? date : null;
+      console.log("Formatted date:", formattedDate);
 
-      // 서버로 보낼 데이터 구성
+      // scheduleData에 모든 필드 포함
       const scheduleData = {
         name,
         date: formattedDate,
@@ -53,9 +50,6 @@ export default function Place() {
         decoration: level,
       };
 
-      console.log("보낼 스케줄 데이터:", scheduleData);
-
-      // API 호출
       const response = await fetch("https://lookie.store/api/v1/schedule", {
         method: "POST",
         headers: {
@@ -66,7 +60,6 @@ export default function Place() {
       });
 
       const responseBody = await response.json();
-      console.log("서버 응답:", responseBody);
 
       if (response.ok) {
         Alert.alert("성공", "일정이 생성되었습니다!");
@@ -76,26 +69,15 @@ export default function Place() {
           `루키 초대하기 ${scheduleData.name} - ${scheduleData.date}`
         );
 
-        // 데이터 삭제
-        // await deleteDataSecurely("name");
-        // await deleteDataSecurely("date");
-        // await deleteDataSecurely("location");
-        // await deleteDataSecurely("atmosphere");
-        // await deleteDataSecurely("decoration");
-
-        // 홈 화면으로 이동하면서 파라미터 전달
-        router.push({
-          pathname: "/home",
-          params: { showNewSchedule: "true" },
-        });
-      } else if (response.status === 401) {
-        Alert.alert("오류", "인증이 만료되었습니다. 다시 로그인해주세요.");
-        router.push("/login");
+        router.push(`/home?showNewSchedule=true&selectedDate=${formattedDate}`);
       } else {
-        Alert.alert("오류", `일정 생성에 실패했습니다: ${responseBody.message || 'Unknown error'}`);
+        Alert.alert(
+          "오류",
+          `일정 생성에 실패했습니다: ${responseBody.message || "Unknown error"}`
+        );
       }
     } catch (error) {
-      console.error("API 요청 에러:", error);
+      console.error("서버와 통신하는 중 문제가 발생했습니다:", error);
       Alert.alert("오류", "서버와 통신하는 중 문제가 발생했습니다.");
     }
   };
@@ -104,15 +86,12 @@ export default function Place() {
     <View style={styles.container}>
       <Header stepText="3/3" />
       <ProgressBar activeStep={3} />
-
       <Text style={styles.title}>어떤 분위기의{"\n"}자리인가요?</Text>
-
       <CategorySelector
         categories={categories}
         selectedCategory={selectedCategory}
         onSelectCategory={setSelectedCategory}
       />
-
       <View style={styles.decorationContainer}>
         <Text style={styles.subtitle}>꾸밈정도를{"\n"}선택해주세요</Text>
         <CustomSlider value={level} onValueChange={setLevel} />
@@ -139,13 +118,8 @@ export default function Place() {
           ))}
         </View>
       </View>
-
       <LevelDescription level={level} descriptions={levelDescriptions} />
-
-      <NextButton
-        text="생성하기!"
-        onPress={handleSaveData}
-      />
+      <NextButton text="생성하기!" onPress={handleSaveData} />
     </View>
   );
 }
@@ -155,7 +129,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#F8FFF4",
     paddingHorizontal: 20,
-    paddingVertical: 0,
   },
   title: {
     fontSize: 24,

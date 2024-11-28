@@ -1,17 +1,22 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text } from "../Themed";
-import { StyleSheet } from "react-native";
+import { Alert, StyleSheet } from "react-native";
 import { StyleProp, ViewStyle } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
+import { requestRembg } from "@/api/updateImage";
+import { router } from "expo-router";
+import { saveDataSecurely } from "@/utils/schedule/stroageUtills";
+import { getToken } from "@/api/getToken";
+import { uploadImageToS3 } from "../nickname/ImagePickerComponent";
 
 interface ChooseMethodProps {
   modalStyle: StyleProp<ViewStyle>;
 }
 
 export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
-  const [selectedImage, setSelectedImage] = useState<String | null>(null);
-  const [captureImage, setCapturedImage] = useState<String | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [captureImage, setCapturedImage] = useState<string | null>(null);
 
   const openGallery = async () => {
     // 권한 요청
@@ -31,10 +36,95 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
       quality: 1, // 이미지 품질 (0~1)
     });
 
-    if (!result.canceled && result) {
-      setSelectedImage(result.assets[0].uri); // 선택한 이미지의 URI를 상태에 저장
+    // console.log(result);
 
-      // 이미지 uri 를 백에게 전달 -> 누끼 제거 후 다시 받아오기 (api 정의 되고나서 구현 시작)
+    // if (!result.canceled && result) {
+    //   setSelectedImage(result.assets[0].uri); // 선택한 이미지의 URI를 상태에 저장
+    // }
+
+    // // 이미지 uri 를 백에게 전달 -> 누끼 제거 후 다시 받아오기 (api 정의 되고나서 구현 시작)
+    // console.log(selectedImage);
+
+    // saveDataSecurely("imageUrl", selectedImage);
+    // // 일단 누끼제거 됐다 치고,,
+    // router.push({ pathname: "/upload", params: { selectedImage } });
+
+    if (result.assets) {
+      setSelectedImage(result.assets[0].uri);
+      const accessToken = await getToken();
+
+      try {
+        let filePathOnServer = null;
+
+        if (selectedImage) {
+          const presignedResponse = await fetch(
+            "https://lookie.store/api/v1/file",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+              },
+              body: JSON.stringify({
+                prefix: "/images/profile",
+                fileName: `${Date.now()}_${selectedImage.split("/").pop()}`,
+              }),
+            }
+          );
+
+          const presignedData = await presignedResponse.json();
+
+          if (presignedData.result.code !== 200) {
+            Alert.alert(
+              "오류",
+              presignedData.result.message ||
+                "파일 업로드 URL 생성에 실패했습니다."
+            );
+            return;
+          }
+
+          const presignedUrl = presignedData.payload.url;
+          filePathOnServer = presignedData.payload.filePath;
+
+          console.log(presignedUrl);
+          console.log(filePathOnServer);
+
+          if (!presignedUrl) {
+            Alert.alert("오류", "Presigned URL이 생성되지 않았습니다.");
+            return;
+          }
+
+          await uploadImageToS3(presignedUrl, selectedImage);
+
+          if (filePathOnServer) {
+            await saveDataSecurely("uploadclothImage", filePathOnServer);
+            await saveDataSecurely("displayImage", result.assets[0].uri);
+          }
+
+          router.push("/upload");
+        } else {
+          Alert.alert("다시 시도해주세요.");
+        }
+      } catch (error) {
+        console.error("API 요청 에러:", error);
+        Alert.alert("옷 정보 등록 실패", "서버 요청 중 문제가 발생했습니다.");
+      }
+
+      // try {
+      //   const rembgImage = await requestRembg(result);
+      //   console.log(rembgImage);
+      //   // .then((blob) => {
+      //   //   const objectURL = URL.createObjectURL(blob); // Blob URL 생성
+      //   // })
+      //   // .catch((error) => {
+      //   //   console.error(
+      //   //     "There has been a problem with your fetch operation:",
+      //   //     error
+      //   //   );
+      //   // });
+      // } catch (err) {
+      //   console.error("배경 제거 실패", err);
+      // }
     }
   };
 
@@ -64,6 +154,9 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
         setCapturedImage(imageUri);
       }
     }
+
+    // 이미지 uri 를 백에게 전달 -> 누끼 제거 후 다시 받아오기 (api 정의 되고나서 구현 시작)
+    console.log(`카메라로 촬영한 이미지 url : ${captureImage}`);
   };
 
   return (

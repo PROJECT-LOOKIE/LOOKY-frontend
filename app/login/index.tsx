@@ -12,7 +12,10 @@ import { router } from "expo-router";
 import CameraIcon from "../../assets/images/camera.svg";
 import BackIcon from "../../assets/images/go.svg";
 import * as SecureStore from "expo-secure-store";
-import { selectImage, uploadImageToS3 } from "../../components/nickname/ImagePickerComponent";
+import {
+  selectImage,
+  uploadImageToS3,
+} from "../../components/nickname/ImagePickerComponent";
 
 export default function Nickname() {
   const [nickname, setNickname] = useState("");
@@ -29,7 +32,7 @@ export default function Nickname() {
         if (nicknameStatus === "true" && token) {
           router.push("/home");
         } else if (token) {
-          setAccessToken(token); 
+          setAccessToken(token);
         } else {
           Alert.alert("오류", "로그인이 필요합니다.");
         }

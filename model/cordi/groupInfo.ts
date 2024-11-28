@@ -7,3 +7,7 @@ export type GroupInfoDTO = {
   userName: string;
   people: number;
 };
+
+export type Mode = {
+  mode: string;
+};

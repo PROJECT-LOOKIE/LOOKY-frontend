@@ -10,7 +10,7 @@ export const postClothInfo = async ({
 }: requestNewClothDTO) => {
   const accessToken = await getToken();
 
-  await fetch(`${process.env.REACT_NATIVE_API}/api/v1/closet/item`, {
+  await fetch(`https://lookie.store/api/v1/closet/item`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -45,7 +45,7 @@ export const getClothItem = async (itemId: number) => {
   const accessToken = await getToken();
 
   const response = await fetch(
-    `${process.env.REACT_NATIVE_API}/api/v1/closet/item/${itemId}`,
+    `https://lookie.store/api/v1/closet/item/${itemId}`,
     {
       method: "GET",
       headers: {
@@ -62,7 +62,7 @@ export const getClothItem = async (itemId: number) => {
 export const deleteClothItem = async (itemId: number) => {
   const accessToken = await getToken();
 
-  await fetch(`${process.env.REACT_NATIVE_API}/api/v1/closet/item/${itemId}`, {
+  await fetch(`https://lookie.store/api/v1/closet/item/${itemId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

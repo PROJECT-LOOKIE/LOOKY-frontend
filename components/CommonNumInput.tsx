@@ -5,12 +5,14 @@ type CommonNumInputProps = {
   placeholder: string;
   style?: object; // 스타일을 선택적으로 받을 수 있도록
   onChangeNumber: (num: number) => void; // 숫자 입력 이벤트 처리 함수
+  value?: string;
 };
 
 const CommonNumInput = ({
   placeholder,
   style,
   onChangeNumber,
+  value,
 }: CommonNumInputProps) => {
   const handleChangeText = (text: string) => {
     const filteredText = text.replace(/[^0-9]/g, ""); // 숫자 이외의 문자 제거
@@ -29,6 +31,7 @@ const CommonNumInput = ({
         style={styles.input}
         keyboardType="numeric" // 숫자 키패드 표시
         onChangeText={handleChangeText} // 숫자 필터링 및 전달
+        defaultValue={value}
       />
     </View>
   );

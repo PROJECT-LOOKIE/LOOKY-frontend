@@ -6,12 +6,18 @@ import {
   StyleSheet,
   ViewStyle,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // 아이콘 사용을 위해 expo-vector-icons 라이브러리 사용
+import { Ionicons } from "@expo/vector-icons";
+import {
+  Menu,
+  MenuTrigger,
+  MenuOptions,
+  MenuOption,
+} from "react-native-popup-menu";
 import Colors from "@/constants/Colors";
 
 type CommonHeaderProps = {
   onLeftPress: () => void;
-  onRightPress: () => void;
+  onRightPress?: () => void;
   text?: string;
   path?: string;
   style?: ViewStyle;
@@ -38,17 +44,33 @@ const CommonHeader = ({
       </TouchableOpacity>
       {/* 오른쪽 아이콘 */}
       {!isHide && (
-        <TouchableOpacity onPress={onRightPress} style={styles.iconContainer}>
-          {text == "저장" ? (
-            <Text>저장</Text>
+        <Menu>
+          {!isHide && text == "저장" ? (
+            <Text style={styles.saveText} onPress={onRightPress}>
+              저장
+            </Text>
           ) : (
-            <Ionicons
-              name="ellipsis-horizontal"
-              size={24}
-              color={path == "closet" ? "white" : "black"}
-            />
+            <MenuTrigger>
+              <Ionicons
+                name="ellipsis-horizontal"
+                size={24}
+                color={path == "closet" ? "white" : "black"}
+              />
+            </MenuTrigger>
           )}
-        </TouchableOpacity>
+          <MenuOptions
+            optionsContainerStyle={{
+              height: 44,
+              flex: 1,
+              justifyContent: "center",
+              alignContent: "center",
+              borderRadius: 20,
+              paddingHorizontal: 20,
+            }}
+          >
+            <MenuOption onSelect={onRightPress} text="삭제하기" />
+          </MenuOptions>
+        </Menu>
       )}
     </View>
   );
@@ -63,14 +85,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background,
     width: "100%",
   },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
-    flex: 1, // 중앙 정렬을 위해 flex 1 사용
-  },
   iconContainer: {
     padding: 8,
+  },
+  saveText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "black",
   },
 });
 

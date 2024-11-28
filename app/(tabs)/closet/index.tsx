@@ -10,7 +10,7 @@ export default function Closet() {
   return (
     <View style={styles.container}>
       <ClothType />
-      <ClothGrid />
+      <ClothGrid mode="closet" />
       <AddButton />
     </View>
   );

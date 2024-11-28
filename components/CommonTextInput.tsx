@@ -5,12 +5,14 @@ type CommonTextInputProps = {
   placeholder: string;
   style?: object; // 스타일을 선택적으로 받을 수 있도록
   onChangeText: (text: string) => void; // 텍스트 입력 이벤트 처리 함수
+  value?: string;
 };
 
 const CommonTextInput = ({
   placeholder,
   style,
   onChangeText,
+  value,
 }: CommonTextInputProps) => {
   return (
     <View style={[styles.inputContainer, style]}>
@@ -18,6 +20,7 @@ const CommonTextInput = ({
         placeholder={placeholder}
         style={styles.input}
         onChangeText={onChangeText} // 텍스트 입력시 호출되는 함수
+        defaultValue={value}
       />
     </View>
   );

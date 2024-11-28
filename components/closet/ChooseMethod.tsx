@@ -1,17 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text } from "../Themed";
 import { StyleSheet } from "react-native";
 import { StyleProp, ViewStyle } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
+import { requestRembg } from "@/api/updateImage";
+import { router } from "expo-router";
+import { saveDataSecurely } from "@/utils/schedule/stroageUtills";
 
 interface ChooseMethodProps {
   modalStyle: StyleProp<ViewStyle>;
 }
 
 export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
-  const [selectedImage, setSelectedImage] = useState<String | null>(null);
-  const [captureImage, setCapturedImage] = useState<String | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [captureImage, setCapturedImage] = useState<string | null>(null);
 
   const openGallery = async () => {
     // 권한 요청
@@ -31,12 +34,29 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
       quality: 1, // 이미지 품질 (0~1)
     });
 
-    if (!result.canceled && result) {
-      setSelectedImage(result.assets[0].uri); // 선택한 이미지의 URI를 상태에 저장
-    }
+    // console.log(result);
 
-    // 이미지 uri 를 백에게 전달 -> 누끼 제거 후 다시 받아오기 (api 정의 되고나서 구현 시작)
-    console.log(`갤러리에서 선택한 이미지 url : ${selectedImage}`);
+    // if (!result.canceled && result) {
+    //   setSelectedImage(result.assets[0].uri); // 선택한 이미지의 URI를 상태에 저장
+    // }
+
+    // // 이미지 uri 를 백에게 전달 -> 누끼 제거 후 다시 받아오기 (api 정의 되고나서 구현 시작)
+    // console.log(selectedImage);
+
+    // saveDataSecurely("imageUrl", selectedImage);
+    // // 일단 누끼제거 됐다 치고,,
+    // router.push({ pathname: "/upload", params: { selectedImage } });
+
+    if (result) {
+      console.log(result);
+      try {
+        const rembgImage = await requestRembg(result);
+
+        console.log(rembgImage);
+      } catch (err) {
+        console.error("배경 제거 실패", err);
+      }
+    }
   };
 
   const openCamera = async () => {

@@ -6,29 +6,29 @@ import {
   ViewStyle,
 } from "react-native";
 import { BoldText } from "./StyledText";
-import { useState } from "react";
+import { useEffect } from "react";
 
-// props : 카테고리 텍스트 리스트들 [전체, 아우터, 상의, 하의 ...]
 interface CategoryProps {
   categoryList: Array<string>; // props의 타입 정의
   style?: ViewStyle;
+  item?: string;
+  clickCategory: (idx: number) => void;
 }
 
-export default function Category({ categoryList, style }: CategoryProps) {
-  const [selectedCategory, setSelectedCategory] = useState(0);
-
-  const clickCategory = (idx: number) => {
-    setSelectedCategory(idx);
-  };
-
+export default function Category({
+  categoryList,
+  style,
+  item,
+  clickCategory,
+}: CategoryProps) {
   return (
     <ScrollView
-      horizontal // 수평 스크롤 활성화
-      showsHorizontalScrollIndicator={false} // 스크롤 바 숨기기
-      contentContainerStyle={[styles.container]} // 스타일 적용
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={[styles.container, style]}
     >
       {categoryList.map((category, idx) => {
-        const isSelected = idx === selectedCategory;
+        const isSelected = category === item;
         return (
           <TouchableOpacity
             key={idx}

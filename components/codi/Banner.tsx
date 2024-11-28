@@ -37,16 +37,16 @@ export default function Banner() {
         <Text style={styles.Bottomtext}># 반포 한강공원</Text>
         <Text style={styles.Bottomtext}># 박진홍 외 12명</Text>
       </View>
-      <Button title="모달 열기" onPress={toggleModal} />
+      {/* <Button title="모달 열기" onPress={toggleModal} /> */}
 
-      <AnimatedModal
+      {/* <AnimatedModal
         isShown={isVisible}
         title="정말 이 약속을 삭제하시겠어요?"
         confirmText="삭제하기"
         cancelText="취소하기"
         onConfirm={onConfirm}
         onCancel={onCancel}
-      />
+      /> */}
     </View>
   );
 }

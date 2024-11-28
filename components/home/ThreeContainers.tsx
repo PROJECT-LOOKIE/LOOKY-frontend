@@ -1,10 +1,22 @@
 import React from "react";
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+} from "react-native";
 import EmptyLookIcon from "../../assets/images/emptylook.svg";
 import TalkIcon from "../../assets/images/talk.svg";
+import { router } from "expo-router";
 
 // 화면 너비 가져오기
 const screenWidth = Dimensions.get("window").width;
+
+const handleChangePage = () => {
+  router.push("/cordi");
+};
 
 export default function ThreeContainers() {
   return (
@@ -12,14 +24,14 @@ export default function ThreeContainers() {
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.scrollContainer}
-      snapToInterval={screenWidth * 0.38 + 12} 
+      snapToInterval={screenWidth * 0.38 + 12}
       decelerationRate="fast"
       snapToAlignment="start"
     >
       {/* 첫 번째 컨테이너 */}
       <TouchableOpacity
-        style={[styles.itemContainer, { width: screenWidth * 0.38 }]} 
-        onPress={() => console.log("첫 번째 컨테이너 클릭")}
+        style={[styles.itemContainer, { width: screenWidth * 0.38 }]}
+        onPress={handleChangePage}
       >
         <EmptyLookIcon width={43} height={43} style={styles.icon} />
         <Text style={styles.text}>아직 룩을{"\n"}선택 안했어요</Text>
@@ -71,7 +83,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: 270,
-    marginRight: 12, 
+    marginRight: 12,
   },
   icon: {
     marginBottom: 8,

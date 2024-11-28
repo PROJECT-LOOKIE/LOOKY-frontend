@@ -1,24 +1,32 @@
 import { ScrollView, View, StyleSheet, Text, Button } from "react-native";
 import Colors from "@/constants/Colors";
-import { router } from "expo-router";
+import { router, useGlobalSearchParams } from "expo-router";
 import CommonHeader from "@/components/CommonHeader";
 import ImageContent from "@/components/upload/imageContent";
 import CommonTextInput from "@/components/CommonTextInput";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Category from "@/components/Category";
 import CommonNumInput from "@/components/CommonNumInput";
 import NextButton from "@/components/schedule/NextButton";
+import { postClothInfo } from "@/api/closet";
+import { getDataSecurely } from "@/utils/schedule/stroageUtills";
 
 export default function ClothInfo() {
+  // const { selectedImage } = useGlobalSearchParams();
+  // let imageUrl = "";
+  // if (selectedImage) {
+  //   imageUrl = selectedImage[0];
+  // }
+
+  const imageUrl = getDataSecurely("imageUrl");
+
   const [brand, setBrand] = useState("");
   const [price, setPrice] = useState(0);
   const categoryList = ["아우터", "상의", "하의", "신발", "악세사리"];
+  const [category, setCategory] = useState("아우터");
+
   const handleLeftPress = () => {
     router.back();
-  };
-
-  const handleRightPress = () => {
-    console.log("아이폰 모달 등장 | 공유, 삭제");
   };
 
   const handleChangeText = (event: string) => {
@@ -29,37 +37,42 @@ export default function ClothInfo() {
     setPrice(event);
   };
 
-  const handlePress = () => {
-    router.push("./revise");
+  const clickCategory = (idx: number) => {
+    setCategory(categoryList[idx]);
+  };
+
+  const handlePress = async () => {
+    console.log(imageUrl);
+    await postClothInfo({ brand, category, price, imageUrl });
+    router.push("/home");
   };
 
   return (
     <View style={[styles.container, styles.background]}>
       <CommonHeader
         onLeftPress={handleLeftPress}
-        onRightPress={handleRightPress}
         path="closet"
         style={styles.background}
         isHide={true}
       />
-      <ImageContent />
+      <ImageContent image={imageUrl} />
       <Text style={styles.title}>브랜드</Text>
       <CommonTextInput
         placeholder="브랜드를 입력해주세요."
-        onChangeText={(event) => {
-          handleChangeText;
-        }}
+        onChangeText={handleChangeText}
       />
       <Text style={styles.title}>카테고리</Text>
       <View>
-        <Category categoryList={categoryList} />
+        <Category
+          categoryList={categoryList}
+          item={category}
+          clickCategory={clickCategory}
+        />
       </View>
       <Text style={styles.title}>가격</Text>
       <CommonNumInput
         placeholder="가격을 입력해주세요."
-        onChangeNumber={(event) => {
-          handleChanteNumber;
-        }}
+        onChangeNumber={handleChanteNumber}
       />
       <NextButton onPress={handlePress} text="등록하기" />
     </View>

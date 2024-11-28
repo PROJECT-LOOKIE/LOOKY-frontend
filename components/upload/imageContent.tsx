@@ -1,9 +1,21 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Image } from "react-native";
 
-export default function ImageContent() {
+type ImageContentProps = {
+  image: string | null;
+};
+
+export default function ImageContent({ image }: ImageContentProps) {
   return (
     <View style={styles.container}>
-      <Text>image 영역</Text>
+      {image ? (
+        <Image
+          source={{ uri: image }}
+          style={styles.image}
+          resizeMode="cover"
+        />
+      ) : (
+        <></>
+      )}
     </View>
   );
 }
@@ -14,5 +26,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: "100%",
     height: "40%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+    aspectRatio: 1,
   },
 });

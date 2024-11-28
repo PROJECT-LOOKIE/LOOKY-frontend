@@ -7,13 +7,17 @@ export type requestNewClothDTO = {
   brand: Brand;
   category: Category;
   price: Price;
-  imageUrl: ImageUrl;
+  imageUrl: ImageUrl | null;
 };
 
 export type responseClothInfoDTO = {
-  id: string;
+  id: number;
   brand: string;
   category: string;
   price: number;
   imageUrl: string;
+};
+
+export type requestRembgDTO = {
+  file: string;
 };

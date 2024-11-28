@@ -12,15 +12,18 @@ import { router } from "expo-router";
 import { useEffect, useState, useCallback } from "react";
 import { getClosetItems } from "@/api/closet";
 import { responseClothInfoDTO } from "@/model/closet/requestNewCloth";
+import { Mode } from "@/model/cordi/groupInfo";
+import { saveDataSecurely } from "@/utils/schedule/stroageUtills";
 
-export default function ClothGrid() {
+export default function ClothGrid({ mode }: Mode) {
   const [clothesInfo, setClothesInfo] = useState<responseClothInfoDTO[]>([]);
   const [loading, setLoading] = useState(false);
-  const [refreshing, setRefreshing] = useState(false); // 새로고침 상태 관리
+  const [refreshing, setRefreshing] = useState(false);
 
   const fetchClothes = async () => {
     try {
       const clothes = await getClosetItems();
+      console.log(clothes);
       setClothesInfo(clothes.payload || []);
     } catch (error) {
       console.error("Failed to fetch clothes:", error);
@@ -37,8 +40,14 @@ export default function ClothGrid() {
     fetchClothes().finally(() => setRefreshing(false));
   }, []);
 
-  const handleChangePage = () => {
-    router.push("/upload");
+  const handleChangePage = (id: number) => {
+    router.push({ pathname: "/upload/revise", params: { id } });
+  };
+
+  const handlePick = (id: number) => {
+    console.log(`${id}번 아이템 pick`);
+    const imageUrl = clothesInfo.find((prev) => prev.id === id)?.imageUrl;
+    saveDataSecurely("pickCloth", imageUrl);
   };
 
   return (
@@ -62,7 +71,11 @@ export default function ClothGrid() {
               <TouchableOpacity
                 key={item.id}
                 style={styles.item}
-                onPress={handleChangePage}
+                onPress={() => {
+                  mode === "closet"
+                    ? handleChangePage(item.id)
+                    : handlePick(item.id);
+                }}
               >
                 <Image
                   source={{ uri: item.imageUrl }}

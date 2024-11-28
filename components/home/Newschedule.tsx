@@ -10,6 +10,7 @@ import { getDataSecurely } from "../../utils/schedule/stroageUtills";
 
 interface NewScheduleProps {
   selectedDate: Date;
+  scheduleData: any;
 }
 
 export default function NewSchedule({ selectedDate }: NewScheduleProps) {

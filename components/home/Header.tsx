@@ -8,8 +8,8 @@ import {
 import CalendarIcon from '../../assets/images/calendar.svg';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
+import { saveDataSecurely } from "../../utils/schedule/stroageUtills"; 
 
-// Props 타입 정의
 interface HeaderProps {
   selectedDayIndex: number;
   setSelectedDayIndex: (index: number) => void;
@@ -28,35 +28,51 @@ export default function Header({
   const selectedYear = selectedDate.getFullYear();
   const selectedMonth = selectedDate.getMonth() + 1;
 
+  function isSameDate(d1: Date, d2: Date) {
+    return (
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate()
+    );
+  }
+
   function getWeekDates(date: Date) {
     const day = date.getDay();
-    const diff = (day === 0 ? -6 : 1) - day; 
-    const monday = new Date(date);
-    monday.setDate(date.getDate() + diff);
+    const diff = (day === 0 ? -6 : 1) - day;
+    const monday = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate() + diff
+    );
 
     const weekDates = [];
     for (let i = 0; i < 7; i++) {
-      const d = new Date(monday);
-      d.setDate(monday.getDate() + i);
+      const d = new Date(
+        monday.getFullYear(),
+        monday.getMonth(),
+        monday.getDate() + i
+      );
       weekDates.push(d);
     }
     return weekDates;
   }
 
-  const weekDates = getWeekDates(selectedDate);
+  const [weekDates, setWeekDates] = useState<Date[]>([]);
 
   useEffect(() => {
-    const today = new Date();
-    const todayIndex = weekDates.findIndex(
-      (date) =>
-        date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear()
+    const dates = getWeekDates(selectedDate);
+    setWeekDates(dates);
+
+    const newIndex = dates.findIndex((date) =>
+      isSameDate(date, selectedDate)
     );
-    if (todayIndex !== -1) {
-      setSelectedDayIndex(todayIndex); 
+
+    if (newIndex !== -1) {
+      setSelectedDayIndex(newIndex);
+    } else {
+      setSelectedDayIndex(-1); 
     }
-  }, [weekDates]);
+  }, [selectedDate]);
 
   const showDatePicker = () => {
     setPickerVisible(true);
@@ -66,9 +82,21 @@ export default function Header({
     setPickerVisible(false);
   };
 
-  const handleConfirm = (date: Date) => {
-    setSelectedDate(date);
-    hideDatePicker();
+  const handleConfirm = async (date: Date) => {
+    const newSelectedDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate()
+    );
+    setSelectedDate(newSelectedDate);
+
+    const formattedDate = `${newSelectedDate.getFullYear()}-${String(
+      newSelectedDate.getMonth() + 1
+    ).padStart(2, "0")}-${String(newSelectedDate.getDate()).padStart(2, "0")}`;
+    await saveDataSecurely("date", formattedDate);
+    console.log("Selected date saved:", formattedDate);
+
+    setPickerVisible(false);
   };
 
   return (
@@ -80,7 +108,6 @@ export default function Header({
         </TouchableOpacity>
       </View>
 
-      {/* 모달로 날짜 선택기 오버레이 */}
       <Modal
         isVisible={isPickerVisible}
         backdropOpacity={0}
@@ -104,14 +131,13 @@ export default function Header({
         </View>
       </Modal>
 
-      {/* 주간 날짜 표시 */}
       <View style={styles.weekContainer}>
         {weekDates.map((dateObj, index) => {
           const dayOfWeek = dateObj.getDay();
           const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
           const day = dayNames[dayOfWeek];
           const dateNum = dateObj.getDate();
-          const isSelected = index === selectedDayIndex;
+          const isSelected = isSameDate(dateObj, selectedDate);
 
           return (
             <TouchableOpacity
@@ -121,8 +147,19 @@ export default function Header({
                 isSelected && styles.selectedDay,
               ]}
               onPress={() => {
+                const newSelectedDate = new Date(
+                  dateObj.getFullYear(),
+                  dateObj.getMonth(),
+                  dateObj.getDate()
+                );
                 setSelectedDayIndex(index);
-                setSelectedDate(dateObj);
+                setSelectedDate(newSelectedDate);
+
+                const formattedDate = `${newSelectedDate.getFullYear()}-${String(
+                  newSelectedDate.getMonth() + 1
+                ).padStart(2, "0")}-${String(newSelectedDate.getDate()).padStart(2, "0")}`;
+                saveDataSecurely("date", formattedDate);
+                console.log("Selected date saved:", formattedDate);
               }}
             >
               <Text
@@ -176,7 +213,6 @@ const styles = StyleSheet.create({
     height: 64,
     alignItems: 'center',
   },
-
   modalStyle: {
     justifyContent: 'flex-start',
     margin: 0,

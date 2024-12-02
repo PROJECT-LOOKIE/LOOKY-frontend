@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { View, Text } from "../Themed";
 import { Alert, StyleSheet } from "react-native";
 import { StyleProp, ViewStyle } from "react-native";
 
 import * as ImagePicker from "expo-image-picker";
-import { requestRembg } from "@/api/updateImage";
+import { postPresignedURL, requestRembg } from "@/api/updateImage";
 import { router } from "expo-router";
 import { saveDataSecurely } from "@/utils/schedule/stroageUtills";
-import { getToken } from "@/api/getToken";
 import { uploadImageToS3 } from "../nickname/ImagePickerComponent";
 
 interface ChooseMethodProps {
@@ -17,6 +16,7 @@ interface ChooseMethodProps {
 export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [captureImage, setCapturedImage] = useState<string | null>(null);
+  const prefix = "/images/profile";
 
   const openGallery = async () => {
     // 권한 요청
@@ -28,7 +28,7 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
       return;
     }
 
-    // 이미지 선택
+    // 이미지 선택 -> 가끔씩 이미지 선택 실패
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images, // 이미지만 선택 가능
       allowsEditing: true, // 편집 허용
@@ -51,28 +51,16 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
 
     if (result.assets) {
       setSelectedImage(result.assets[0].uri);
-      const accessToken = await getToken();
 
       try {
         let filePathOnServer = null;
 
         if (selectedImage) {
-          const presignedResponse = await fetch(
-            "https://lookie.store/api/v1/file",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${accessToken}`,
-              },
-              body: JSON.stringify({
-                prefix: "/images/profile",
-                fileName: `${Date.now()}_${selectedImage.split("/").pop()}`,
-              }),
-            }
-          );
-
-          const presignedData = await presignedResponse.json();
+          const fileName = `${Date.now()}_${selectedImage.split("/").pop()}`;
+          const presignedData = await postPresignedURL({
+            prefix,
+            fileName,
+          });
 
           if (presignedData.result.code !== 200) {
             Alert.alert(
@@ -86,8 +74,8 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
           const presignedUrl = presignedData.payload.url;
           filePathOnServer = presignedData.payload.filePath;
 
-          console.log(presignedUrl);
-          console.log(filePathOnServer);
+          // console.log(presignedUrl);
+          // console.log(filePathOnServer);
 
           if (!presignedUrl) {
             Alert.alert("오류", "Presigned URL이 생성되지 않았습니다.");
@@ -165,7 +153,6 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
         앨범에서 추가
       </Text>
 
-      {/* 구분선 추가 */}
       <View style={styles.separator} />
 
       <Text style={{ color: "white", fontSize: 16 }} onPress={openCamera}>
@@ -177,9 +164,9 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
 
 const styles = StyleSheet.create({
   separator: {
-    height: 1, // 구분선의 높이
-    backgroundColor: "white", // 구분선의 색상
-    marginVertical: 10, // 구분선과 텍스트 간의 간격
-    width: "100%", // 구분선의 너비 (부모 View의 너비와 동일)
+    height: 1,
+    backgroundColor: "white",
+    marginVertical: 10,
+    width: "100%",
   },
 });

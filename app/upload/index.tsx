@@ -1,6 +1,5 @@
-import { ScrollView, View, StyleSheet, Text, Button } from "react-native";
-import Colors from "@/constants/Colors";
-import { router, useGlobalSearchParams } from "expo-router";
+import { View, StyleSheet, Text, Alert } from "react-native";
+import { router } from "expo-router";
 import CommonHeader from "@/components/CommonHeader";
 import ImageContent from "@/components/upload/imageContent";
 import CommonTextInput from "@/components/CommonTextInput";
@@ -12,9 +11,10 @@ import { postClothInfo } from "@/api/closet";
 import { getDataSecurely } from "@/utils/schedule/stroageUtills";
 
 export default function ClothInfo() {
+  const categoryList = ["아우터", "상의", "하의", "신발", "악세사리"];
+
   const [brand, setBrand] = useState("");
   const [price, setPrice] = useState(0);
-  const categoryList = ["아우터", "상의", "하의", "신발", "악세사리"];
   const [category, setCategory] = useState("아우터");
   const [displayImage, setDisplayImage] = useState<string | null>("");
   const [imageUrl, setImageUrl] = useState<string | null>("");
@@ -47,8 +47,14 @@ export default function ClothInfo() {
 
   const handlePress = async () => {
     console.log(imageUrl);
-    await postClothInfo({ brand, category, price, imageUrl });
-    router.push("/home");
+    try {
+      await postClothInfo({ brand, category, price, imageUrl });
+      router.push("/home");
+      Alert.alert("옷이 정상적으로 등록되었습니다!");
+    } catch (err) {
+      Alert.alert("옷 등록에 실패하였습니다. 다시 시도해주세요.");
+      console.error(`옷 등록 실패. 에러코드 : ${err}`);
+    }
   };
 
   return (

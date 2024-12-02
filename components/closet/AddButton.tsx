@@ -7,24 +7,21 @@ import ChooseMethod from "./ChooseMethod";
 export default function AddButton() {
   const rotation = useRef(new Animated.Value(0)).current;
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isRotated, setIsRotated] = useState(false); // 회전 상태를 저장하는 상태값 추가
+  const [isRotated, setIsRotated] = useState(false);
 
-  // 아이콘을 눌렀을 때
   const handlePress = () => {
     // 1. 버튼 45도 회전 또는 원래 위치로 되돌리기
     Animated.timing(rotation, {
-      toValue: isRotated ? 0 : 1, // isRotated에 따라 0 또는 1로 설정
+      toValue: isRotated ? 0 : 1,
       duration: 200,
       useNativeDriver: true,
     }).start();
 
-    setIsRotated(!isRotated); // 회전 상태를 반전시킴
+    setIsRotated(!isRotated);
 
-    // 2. 카메라 | 갤러리 선택 팝업창 등장
     setIsModalOpen(!isModalOpen);
   };
 
-  // rotation 값을 애니메이션으로 변환하여 0 -> 45도로 회전하게 합니다.
   const rotateInterpolate = rotation.interpolate({
     inputRange: [0, 1],
     outputRange: ["0deg", "45deg"],

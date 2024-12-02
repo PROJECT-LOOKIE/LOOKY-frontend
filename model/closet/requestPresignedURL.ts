@@ -1,7 +1,4 @@
-type Prefix = "string";
-type FileName = "string";
-
 export type requestPresignedDTO = {
-  prefix: Prefix;
-  fileName: FileName;
+  prefix: string;
+  fileName: string;
 };

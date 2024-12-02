@@ -1,6 +1,6 @@
 import Colors from "@/constants/Colors";
 import Category from "../Category";
-import { Text, View } from "../Themed";
+import { View } from "../Themed";
 import { StyleSheet } from "react-native";
 import { useState } from "react";
 

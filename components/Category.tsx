@@ -6,7 +6,6 @@ import {
   ViewStyle,
 } from "react-native";
 import { BoldText } from "./StyledText";
-import { useEffect } from "react";
 
 interface CategoryProps {
   categoryList: Array<string>; // props의 타입 정의

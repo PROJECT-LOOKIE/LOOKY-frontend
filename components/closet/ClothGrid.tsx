@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  Alert,
 } from "react-native";
 import Colors from "@/constants/Colors";
 import { router } from "expo-router";
@@ -13,10 +14,9 @@ import { useEffect, useState, useCallback } from "react";
 import { getClosetItems } from "@/api/closet";
 import { responseClothInfoDTO } from "@/model/closet/requestNewCloth";
 import { Mode } from "@/model/cordi/groupInfo";
-import { saveDataSecurely } from "@/utils/schedule/stroageUtills";
 
 type ClothGridItem = {
-  setImageUrl: (url: string) => void;
+  setImageUrl?: (url: string) => void;
 };
 
 export default function ClothGrid({ mode, setImageUrl }: Mode & ClothGridItem) {
@@ -48,10 +48,13 @@ export default function ClothGrid({ mode, setImageUrl }: Mode & ClothGridItem) {
   };
 
   const handlePick = async (id: number) => {
-    console.log(`${id}번 아이템 pick`);
     const pickImage = clothesInfo.find((prev) => prev.id === id)?.imageUrl;
-    if (pickImage) {
+    if (pickImage && setImageUrl) {
       setImageUrl(pickImage);
+    } else {
+      Alert.alert(
+        "선택한 이미지에 대한 정보를 불러오는데 실패했습니다. 다시 시도해주세요."
+      );
     }
   };
 

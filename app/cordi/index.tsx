@@ -1,7 +1,6 @@
 import { deleteClothItem } from "@/api/closet";
 import Category from "@/components/Category";
 import ClothGrid from "@/components/closet/ClothGrid";
-import CordiZone from "@/components/closet/CordiZone";
 import Banner from "@/components/codi/Banner";
 import MakeCordi from "@/components/codi/makeCordi";
 import CommonHeader from "@/components/CommonHeader";

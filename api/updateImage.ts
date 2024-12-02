@@ -3,6 +3,7 @@ import { getToken } from "./getToken";
 import { requestPresignedDTO } from "@/model/closet/requestPresignedURL";
 import RNFS from "react-native-fs";
 import * as ImagePicker from "expo-image-picker";
+import { REACT_NATIVE_API, REACT_NATIVE_REMBG_API } from "@env";
 
 // 누끼 제거 요청 API
 export const requestRembg = async (file: ImagePicker.ImagePickerResult) => {
@@ -19,7 +20,7 @@ export const requestRembg = async (file: ImagePicker.ImagePickerResult) => {
     type: selectedAsset.mimeType,
   });
 
-  const res = await fetch(`http://117.17.198.45:8000/api/remove`, {
+  const res = await fetch(`${REACT_NATIVE_REMBG_API}/api/remove`, {
     method: "POST",
     headers: {
       "Content-Type": "multipart/form-data",
@@ -41,20 +42,17 @@ export const postPresignedURL = async ({
 }: requestPresignedDTO) => {
   const accessToken = await getToken();
 
-  const presignedResponse = await fetch(
-    `${process.env.REACT_NATIVE_API}/api/v1/file`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-      body: JSON.stringify({
-        prefix: prefix,
-        fileName: fileName,
-      }),
-    }
-  );
+  const presignedResponse = await fetch(`${REACT_NATIVE_API}/api/v1/file`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({
+      prefix: prefix,
+      fileName: fileName,
+    }),
+  });
 
   return presignedResponse.json();
 };

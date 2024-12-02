@@ -1,5 +1,12 @@
 import React, { useState, useRef } from "react";
-import { Text, View, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { WebView } from "react-native-webview";
 import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
@@ -19,7 +26,7 @@ export default function Login() {
   const kakaoAuthUrl = "http://43.201.12.36:8080/oauth2/authorization/kakao";
 
   // WebView URL 변경 시 호출
-  const handleNavigationStateChange = async(event: any) => {
+  const handleNavigationStateChange = async (event: any) => {
     const url = event.url;
     console.log("현재 URL:", url);
 
@@ -48,13 +55,13 @@ export default function Login() {
   };
 
   const sendUserDataToServer = async (accessToken: string) => {
-    setLoading(true); 
+    setLoading(true);
     try {
       const response = await fetch("http://43.201.12.36:8080/api/v1/user", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`, 
+          Authorization: `Bearer ${accessToken}`,
         },
       });
 
@@ -62,7 +69,7 @@ export default function Login() {
       if (response.ok) {
         console.log("서버 응답:", data);
         Alert.alert("로그인 성공", "로그인에 성공했습니다.");
-        router.push("/login"); 
+        router.push("/login");
       } else {
         console.error("서버 에러:", data);
         Alert.alert("로그인 실패", "서버와의 통신에 문제가 발생했습니다.");
@@ -71,7 +78,7 @@ export default function Login() {
       console.error("API 요청 에러:", error);
       Alert.alert("로그인 실패", "서버 요청 중 문제가 발생했습니다.");
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -86,20 +93,33 @@ export default function Login() {
 
       {/* 카카오 로그인 버튼 */}
       {!showWebView && (
-        <TouchableOpacity style={styles.kakaoButton} onPress={() => setShowWebView(true)}>
+        // <TouchableOpacity style={styles.kakaoButton} onPress={() => setShowWebView(true)}>
+        <TouchableOpacity
+          style={styles.kakaoButton}
+          onPress={() => router.push("/login")}
+        >
           <KakaoIcon width={345} height={50} />
         </TouchableOpacity>
       )}
 
       {/* 애플 로그인 버튼 */}
       {!showWebView && (
-        <TouchableOpacity style={styles.appleButton} onPress={() => router.push("/login")}>
+        <TouchableOpacity
+          style={styles.appleButton}
+          onPress={() => router.push("/login")}
+        >
           <AppleIcon width={345} height={50} />
         </TouchableOpacity>
       )}
 
       {/* 로딩 인디케이터 */}
-      {loading && <ActivityIndicator style={styles.loadingIndicator} size="large" color="#FFFFFF" />}
+      {loading && (
+        <ActivityIndicator
+          style={styles.loadingIndicator}
+          size="large"
+          color="#FFFFFF"
+        />
+      )}
 
       {/* WebView */}
       {showWebView && (

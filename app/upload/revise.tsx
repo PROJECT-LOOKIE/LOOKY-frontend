@@ -1,12 +1,4 @@
-import {
-  ScrollView,
-  View,
-  StyleSheet,
-  Text,
-  Button,
-  Alert,
-} from "react-native";
-import Colors from "@/constants/Colors";
+import { View, StyleSheet, Text, Alert } from "react-native";
 import { router, useGlobalSearchParams } from "expo-router";
 import CommonHeader from "@/components/CommonHeader";
 import ImageContent from "@/components/upload/imageContent";
@@ -20,26 +12,29 @@ import { responseClothInfoDTO } from "@/model/closet/requestNewCloth";
 import { MenuProvider } from "react-native-popup-menu";
 
 export default function ClothRevise() {
+  const categoryList = ["아우터", "상의", "하의", "신발", "악세사리"];
+
   const { id } = useGlobalSearchParams();
   const itemId = Number(id);
-  const [clothItem, setClothItem] = useState<responseClothInfoDTO>();
 
-  const fetchClothesDetail = async (itemId: number) => {
-    try {
-      const info = await getClothItem(itemId);
-      setClothItem(info.payload || []);
-    } catch (err) {
-      console.error("Failed to fetch cloth item:", err);
-    }
-  };
+  const [clothItem, setClothItem] = useState<responseClothInfoDTO>();
+  const [brand, setBrand] = useState("");
+  const [price, setPrice] = useState(0);
+  const [category, setCategory] = useState("아우터");
 
   useEffect(() => {
+    const fetchClothesDetail = async (itemId: number) => {
+      try {
+        const info = await getClothItem(itemId);
+        setClothItem(info.payload || []);
+      } catch (err) {
+        console.error("Failed to fetch cloth item:", err);
+      }
+    };
+
     fetchClothesDetail(itemId);
   }, []);
 
-  const [brand, setBrand] = useState("");
-  const [price, setPrice] = useState(0);
-  const categoryList = ["아우터", "상의", "하의", "신발", "악세사리"];
   const handleLeftPress = () => {
     router.back();
   };
@@ -64,7 +59,14 @@ export default function ClothRevise() {
     console.log(`가격 입력 중... ${event}`);
   };
 
+  const clickCategory = (idx: number) => {
+    setCategory(categoryList[idx]);
+  };
+
   const handlePress = () => {
+    {
+      /* TODO : 수정 api 추가 */
+    }
     router.push("/closet");
     Alert.alert("수정되었습니다!");
   };
@@ -77,7 +79,6 @@ export default function ClothRevise() {
           onRightPress={handleRightPress}
           path="closet"
           style={styles.background}
-          // isHide={true}
         />
       </MenuProvider>
       <ImageContent
@@ -93,7 +94,8 @@ export default function ClothRevise() {
       <View>
         <Category
           categoryList={categoryList}
-          item={clothItem ? clothItem.category : ""}
+          item={clothItem ? clothItem.category : category}
+          clickCategory={clickCategory}
         />
       </View>
       <Text style={styles.title}>가격</Text>

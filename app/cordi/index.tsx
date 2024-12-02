@@ -1,4 +1,3 @@
-import { deleteClothItem } from "@/api/closet";
 import Category from "@/components/Category";
 import ClothGrid from "@/components/closet/ClothGrid";
 import Banner from "@/components/codi/Banner";
@@ -6,7 +5,6 @@ import MakeCordi from "@/components/codi/makeCordi";
 import CommonHeader from "@/components/CommonHeader";
 import CategorySelector from "@/components/schedule/CategorySelector";
 import Colors from "@/constants/Colors";
-import { getDataSecurely } from "@/utils/schedule/stroageUtills";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { View, StyleSheet, ScrollView, Alert } from "react-native";

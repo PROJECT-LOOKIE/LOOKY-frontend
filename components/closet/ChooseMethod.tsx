@@ -16,7 +16,7 @@ interface ChooseMethodProps {
 export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [captureImage, setCapturedImage] = useState<string | null>(null);
-  const prefix = "/images/profile";
+  const prefix = "/images/closet";
 
   const openGallery = async () => {
     // 권한 요청
@@ -38,12 +38,14 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
 
     // console.log(result);
 
-    // if (!result.canceled && result) {
-    //   setSelectedImage(result.assets[0].uri); // 선택한 이미지의 URI를 상태에 저장
-    // }
+    /*                         코드 수정                                  */
+    if (!result.canceled && result) {
+      setSelectedImage(result.assets[0].uri); // 선택한 이미지의 URI를 상태에 저장
+    }
 
-    // // 이미지 uri 를 백에게 전달 -> 누끼 제거 후 다시 받아오기 (api 정의 되고나서 구현 시작)
-    // console.log(selectedImage);
+    // 이미지 uri 를 백에게 전달 -> 누끼 제거 후 다시 받아오기 (api 정의 되고나서 구현 시작)
+    // console.log("선택한 이미지");
+    // console.log(result);
 
     // saveDataSecurely("imageUrl", selectedImage);
     // // 일단 누끼제거 됐다 치고,,
@@ -51,6 +53,22 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
 
     if (result.assets) {
       setSelectedImage(result.assets[0].uri);
+
+      try {
+        const rembgImage = await requestRembg(result);
+        console.log(rembgImage);
+        // .then((blob) => {
+        //   const objectURL = URL.createObjectURL(blob); // Blob URL 생성
+        // })
+        // .catch((error) => {
+        //   console.error(
+        //     "There has been a problem with your fetch operation:",
+        //     error
+        //   );
+        // });
+      } catch (err) {
+        console.error("배경 제거 실패", err);
+      }
 
       try {
         let filePathOnServer = null;
@@ -85,8 +103,8 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
           await uploadImageToS3(presignedUrl, selectedImage);
 
           if (filePathOnServer) {
-            await saveDataSecurely("uploadclothImage", filePathOnServer);
             await saveDataSecurely("displayImage", result.assets[0].uri);
+            await saveDataSecurely("sendServerImage", filePathOnServer);
           }
 
           router.push("/upload");
@@ -97,23 +115,8 @@ export default function ChooseMethod({ modalStyle }: ChooseMethodProps) {
         console.error("API 요청 에러:", error);
         Alert.alert("옷 정보 등록 실패", "서버 요청 중 문제가 발생했습니다.");
       }
-
-      // try {
-      //   const rembgImage = await requestRembg(result);
-      //   console.log(rembgImage);
-      //   // .then((blob) => {
-      //   //   const objectURL = URL.createObjectURL(blob); // Blob URL 생성
-      //   // })
-      //   // .catch((error) => {
-      //   //   console.error(
-      //   //     "There has been a problem with your fetch operation:",
-      //   //     error
-      //   //   );
-      //   // });
-      // } catch (err) {
-      //   console.error("배경 제거 실패", err);
-      // }
     }
+    /*                         코드 수정                                  */
   };
 
   const openCamera = async () => {

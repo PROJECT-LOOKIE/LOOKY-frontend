@@ -21,8 +21,9 @@ export default function ClothInfo() {
 
   useEffect(() => {
     const getImageData = async () => {
+      const uploadImage = await getDataSecurely("sendServerImage");
       const displayImage = await getDataSecurely("displayImage");
-      const uploadImage = await getDataSecurely("uploadClothImage");
+
       setDisplayImage(displayImage);
       setImageUrl(uploadImage);
     };
@@ -46,6 +47,7 @@ export default function ClothInfo() {
   };
 
   const handlePress = async () => {
+    console.log("post할 이미지 url");
     console.log(imageUrl);
     try {
       await postClothInfo({ brand, category, price, imageUrl });

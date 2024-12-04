@@ -20,7 +20,7 @@ export const requestRembg = async (file: ImagePicker.ImagePickerResult) => {
     type: selectedAsset.mimeType,
   });
 
-  const res = await fetch(`${REACT_NATIVE_REMBG_API}/api/remove`, {
+  const res = await fetch(`https://lookie.store/api/remove`, {
     method: "POST",
     headers: {
       "Content-Type": "multipart/form-data",
@@ -42,7 +42,7 @@ export const postPresignedURL = async ({
 }: requestPresignedDTO) => {
   const accessToken = await getToken();
 
-  const presignedResponse = await fetch(`${REACT_NATIVE_API}/api/v1/file`, {
+  const presignedResponse = await fetch(`https://lookie.store/api/v1/file`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

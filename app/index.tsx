@@ -93,10 +93,9 @@ export default function Login() {
 
       {/* 카카오 로그인 버튼 */}
       {!showWebView && (
-        // <TouchableOpacity style={styles.kakaoButton} onPress={() => setShowWebView(true)}>
         <TouchableOpacity
           style={styles.kakaoButton}
-          onPress={() => router.push("/login")}
+          onPress={() => setShowWebView(true)}
         >
           <KakaoIcon width={345} height={50} />
         </TouchableOpacity>
